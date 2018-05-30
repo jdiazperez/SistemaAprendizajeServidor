@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="description" content="aprendizaje">
+    <meta name="keywords" content="aprendizaje">
+    <meta name="author" content="Jorge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Sistema de Aprendizaje</title>
+</head>
+
+<body onload="actualizarUsuarioIdentificado(); mostrarCuestion();">
+
+    <header id="headerGuardar" class="fixed-top bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="dropdown oculto">
+                        <button class="btn btn-info dropdown-toggle" type="button" data-toggle="dropdown">Existen nuevas propuestas para corregir</button>
+                        <div id="dropdownNuevasPropuestas" class="dropdown-menu"></div>
+                    </div>
+                </div>
+                <div class="col-md">
+                    <a href="listarCuestionesMaestro.html" class="btn btn-danger"><i class="fa fa-times mr-2"></i>Cancelar</a>
+                    <button type="submit" form="cuestion" class="btn btn-success ml-2" id="submitGuardar"><i class="fa fa-save mr-2"></i>Guardar</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <header>
+        <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
+            <div class="container">
+                <span class="navbar-brand h1">Sistema de Aprendizaje</span>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a id="usuarioIdentificado" class="nav-link"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section id="sectionCuestion">
+        <form action="listarCuestionesMaestro.html" onsubmit="return guardarCuestion()" id="cuestion">
+        </form>
+    </section>
+
+    <footer class="footer bg-primary mt-3">
+        <div class="container bg-primary text-right py-2">
+            <a href="#top"><i class="fas fa-arrow-up text-white"></i></a>
+        </div>
+    </footer>
+
+    <script src="js/bootstrap/jquery-3.3.1.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
+    <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
+    <script src="js/editarCuestionMaestro.js" charset="UTF-8"></script>
+
+</body>
+
+</html>

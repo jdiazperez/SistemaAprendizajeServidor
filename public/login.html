@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="description" content="aprendizaje">
+    <meta name="keywords" content="aprendizaje">
+    <meta name="author" content="Jorge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Sistema de Aprendizaje</title>
+</head>
+
+<body>
+
+    <header>
+        <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
+            <div class="container">
+                <span class="navbar-brand h1">Sistema de Aprendizaje</span>
+            </div>
+        </nav>
+    </header>
+
+    <section>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 bg-light py-5">
+                    <h1 class="text-center">Iniciar Sesión</h1>
+                </div>
+            </div>
+            <form onsubmit="return validacion()">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 bg-light">
+                        <div class="row justify-content-center">
+                            <div class="col-8">
+                                <div class="form-group">
+                                    <label for="usuario">Usuario</label>
+                                    <input type="text" id="usuario" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 bg-light">
+                        <div class="row justify-content-center">
+                            <div class="col-8">
+                                <div class="form-group">
+                                    <label for="contraseña">Contraseña</label>
+                                    <input type="password" id="contraseña" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 bg-light">
+                        <div class="row mt-3">
+                            <div class="col-8"></div>
+                            <div class="col">
+                                <input type="submit" class="btn btn-lg btn-primary" value="Entrar">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 bg-light">
+                    <div class="row mt-4 mb-5 align-items-center">
+                        <div class="col-8 text-right">
+                            ¿Todavía no estás registrado?
+                        </div>
+                        <div class="col">
+                            <a class="btn btn-secondary" href="registro.html" role="button">Registrate Aquí</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/bootstrap/jquery-3.3.1.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
+    <script src="js/identificacion.js" charset="UTF-8"></script>
+
+</body>
+
+</html>

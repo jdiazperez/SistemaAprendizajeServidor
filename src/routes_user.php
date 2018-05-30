@@ -6,7 +6,6 @@
 
 use Slim\Http\Request;
 use Slim\Http\Response;
-use Swagger\Annotations as SWG;
 use TDW18\Usuarios\Entity\Usuario;
 use TDW18\Usuarios\Messages;
 
@@ -363,35 +362,11 @@ $app->options(
  *     )
  * )
  */
-$app->post(
-    $_ENV['RUTA_API'] . '/users',
+$app->post('/api/users',
     function (Request $request, Response $response): Response {
 
-        if (!$this->jwt->isAdmin) {
-            $this->logger->info(
-                $request->getMethod() . ' ' . $request->getUri()->getPath(),
-                ['uid' => $this->jwt->user_id, 'status' => 403]
-            );
-
-            return $response
-                ->withJson(
-                    [
-                        'code' => 403,
-                        'message' => Messages::MESSAGES['tdw_post_users_403']
-                    ],
-                    403
-                );
-        }
-
-        $req_data
-            = $request->getParsedBody()
-            ?? json_decode($request->getBody(), true);
-
-        if (!isset($req_data['username'], $req_data['email'], $req_data['password'])) { // 422 - Faltan datos
-            $this->logger->info(
-                $request->getMethod() . ' ' . $request->getUri()->getPath(),
-                ['uid' => $this->jwt->user_id, 'status' => 422]
-            );
+        if (!isset($_POST['nombreUsuario'], $_POST['contrasenia'],
+            $_POST['nombre'], $_POST['apellidos'], $_POST['correo'], $_POST['telefono'])) { // 422 - Faltan datos
 
             return $response
                 ->withJson(
@@ -409,45 +384,36 @@ $app->post(
             ->getRepository(Usuario::class)
             ->findAll();
         /** @var Usuario $usuario */
-        foreach ($usuarios as $usuario) {
-            if ($usuario->getUsername() === $req_data['username'] || $usuario->getEmail() === $req_data['email']) {
-                $this->logger->info(
-                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
-                    ['uid' => $this->jwt->user_id, 'status' => 400]
-                );
-                return $response
-                    ->withJson(
-                        [
-                            'code' => 400,
-                            'message' => Messages::MESSAGES['tdw_post_users_400']
-                        ],
-                        400
-                    );
-            }
-        }
+        /*        foreach ($usuarios as $usuario) {
+                    if ($usuario->getUsername() === $req_data['username'] || $usuario->getEmail() === $req_data['email']) {
+                        $this->logger->info(
+                            $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                            ['uid' => $this->jwt->user_id, 'status' => 400]
+                        );
+                        return $response
+                            ->withJson(
+                                [
+                                    'code' => 400,
+                                    'message' => Messages::MESSAGES['tdw_post_users_400']
+                                ],
+                                400
+                            );
+                    }
+                }*/
 
         $usuario = new Usuario(
-            $req_data['username'],
-            $req_data['email'],
-            $req_data['password'],
-            $req_data['enabled'],
-            $req_data['isMaestro'],
-            $req_data['isAdmin']);
+            $_POST['nombreUsuario'],
+            $_POST['contrasenia'],
+            $_POST['nombre'],
+            $_POST['apellidos'],
+            $_POST['correo'],
+            $_POST['telefono']);
 
         $entityManager->persist($usuario);
         $entityManager->flush();
 
-        $usuario = $entityManager
-            ->getRepository(Usuario::class)
-            ->findOneBy(['username' => $req_data['username']]);
-
-        $this->logger->info(
-            $request->getMethod() . ' ' . $request->getUri()->getPath(),
-            ['uid' => $this->jwt->user_id, 'status' => 201]
-        );
-
         return $response
-            ->withJson($usuario, 201);
+            ->withRedirect('./index.html', 204);
     }
 )->setName('tdw_post_users');
 

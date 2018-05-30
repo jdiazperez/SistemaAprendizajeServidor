@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="description" content="aprendizaje">
+    <meta name="keywords" content="aprendizaje">
+    <meta name="author" content="Jorge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Sistema de Aprendizaje</title>
+</head>
+
+<body>
+
+    <header>
+        <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
+            <div class="container">
+                <span class="navbar-brand h1">Sistema de Aprendizaje</span>
+            </div>
+        </nav>
+    </header>
+
+    <section>
+        <div class="container bg-light py-5 px-4">
+            <div class="row justify-content-center">
+                <h1 class="text-center">Registro</h1>
+            </div>
+            <form id="formRegistro" onsubmit="return registro()">
+                <div class="form-group mt-3">
+                    <label for="nombreUsuario">Nombre de Usuario</label>
+                    <input type="text" id="nombreUsuario" name="nombreUsuario" class="form-control form-control-sm" placeholder="Introduce tu nombre de usuario" required>
+                </div>
+                <div id="alertDisponible" class="alert alert-success mt-2 oculto"><i class="fas fa-check mr-2"></i>El nombre de usuario está disponible
+                </div>
+                <div id="alertNoDisponible" class="alert alert-danger mt-2 oculto"><i class="fas fa-times mr-2"></i>El nombre de usuario no está disponible
+                </div>
+                <input type="button" id="btnComprobarDisponibilidad" class="btn btn-secondary" value="Comprobar Disponibilidad" onclick="comprobarDisponibilidadUsuario()">
+                <button id="btnCambiarUsuario" class="btn btn-secondary oculto" type="button" onclick="cambiarNombreUsuario()">
+                Cambiar el Nombre de Usuario
+                </button>
+
+                <div id="datosUsuario" class="oculto">
+                    <div class="form-group mt-3">
+                        <label for="contrasenia">Contraseña</label>
+                        <input type="password" id="contrasenia" name="contrasenia" class="form-control form-control-sm" placeholder="Introduce tu contraseña" required>
+                    </div>
+                    <div class="form-group mt-3">
+                        <label for="contrasenia2">Repite la contraseña</label>
+                        <input type="password" id="contrasenia2" class="form-control form-control-sm" placeholder="Repite la contraseña" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="correo">Email</label>
+                        <input type="email" id="correo" name="correo" class="form-control form-control-sm" placeholder="Introduce tu correo electrónico" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="form-control form-control-sm" placeholder="Introduce tu nombre" pattern="([A-zÀ-ž\s]){2,}" title="Los apellidos solo pueden contener caracteres alfabéticos y espacios" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellidos">Apellidos</label>
+                        <input type="text" id="apellidos" name="apellidos" class="form-control form-control-sm" placeholder="Introduce tus apellidos" pattern="([A-zÀ-ž\s]){2,}" title="Los apellidos solo pueden contener caracteres alfabéticos y espacios" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel" id="telefono" name="telefono" class="form-control form-control-sm" placeholder="Introduce tu número de teléfono" pattern="[0-9]{9}" title="El número de teléfono debe tener 9 caracteres numéricos" required>
+                    </div>
+                    <input type="submit" class="btn btn-lg btn-primary mt-3" value="Registrarse">
+                </div>
+            </form>
+            <div id="alertContrasenias" class="alert alert-danger mt-3 oculto"><i class="fas fa-times mr-2"></i>Las contraseñas no coinciden
+            </div>
+
+        </div>
+    </section>
+    <section>
+        <div class="modal" id="modalRegistro">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Registro</h5>                        
+                    </div>
+                    <div class="modal-body">
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn btn-secondary" href="/">Aceptar</a>                     
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/bootstrap/jquery-3.3.1.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
+    <script src="js/registro.js" charset="UTF-8"></script>
+
+</body>
+
+</html>

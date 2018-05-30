@@ -1,0 +1,25 @@
+body {
+    background: #dadfe8;
+}
+
+#navbar{
+    border-bottom: 4px solid black;
+}
+
+section:first-of-type{
+    margin-top: 120px;
+}
+
+#containerCuestiones .row{
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+#headerGuardar {
+    padding-top: 80px;
+    padding-bottom: 5px;
+}
+
+.oculto {
+    display: none;
+}

@@ -81,19 +81,17 @@ class Usuario implements \JsonSerializable
      * Usuario constructor.
      * @param string $nombreUsuario
      * @param string $contrasenia
-     * @param bool $maestro
-     * @param bool $activo
      * @param string $nombre
      * @param string $apellidos
      * @param string $correo
      * @param string $telefono
      */
-    public function __construct(string $nombreUsuario, string $contrasenia, bool $maestro, bool $activo, string $nombre, string $apellidos, string $correo, string $telefono)
+    public function __construct(string $nombreUsuario, string $contrasenia, string $nombre, string $apellidos, string $correo, string $telefono)
     {
         $this->nombreUsuario = $nombreUsuario;
-        $this->contrasenia = $contrasenia;
-        $this->maestro = $maestro;
-        $this->activo = $activo;
+        $this->setContrasenia($contrasenia);
+        $this->maestro = false;
+        $this->activo = false;
         $this->nombre = $nombre;
         $this->apellidos = $apellidos;
         $this->correo = $correo;
@@ -137,7 +135,7 @@ class Usuario implements \JsonSerializable
      */
     public function setContrasenia(string $contrasenia): void
     {
-        $this->contrasenia = $contrasenia;
+        $this->contrasenia = password_hash($contrasenia, PASSWORD_DEFAULT);
     }
 
     /**

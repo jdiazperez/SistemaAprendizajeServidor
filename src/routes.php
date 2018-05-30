@@ -26,7 +26,7 @@ $app->get(
 
         // Redirect index view
         return $response
-            ->withRedirect('/api-docs/index.html');
+            ->withRedirect('/login.html');
     }
 );
 
@@ -127,3 +127,77 @@ $app->post(
             ->withAddedHeader('X-Token', $json_web_token);
     }
 )->setName('tdw_post_login');
+
+/**
+ * Summary: Devuelve un código de status indicando si un usuario existe
+ * basándose en su nombre de usuario
+ */
+
+$app->get('/api/users/nombreUsuario/{nombreUsuario:.+}',
+    function (Request $request, Response $response, $args): Response {
+
+        /** @var Usuario $usuario */
+        $usuario = getEntityManager()
+            ->getRepository(Usuario::class)
+            ->findOneBy(['nombreUsuario' => $args['nombreUsuario']]);
+
+        if ($usuario === null) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => 0, 'status' => 404]
+            );
+
+            return $response->withJson(
+                [
+                    'code' => 404,
+                    'message' => 'El usuario no existe'
+                ],
+                404
+            );
+        } else {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => 0, 'status' => 200]
+            );
+            return $response->withStatus(200);
+        }
+
+    }
+)->setName('tdw_get_users_nombreUsuario');
+
+/**
+ * POST /registro
+ */
+
+$app->post('/api/registro',
+    function (Request $request, Response $response): Response {
+
+        if (!isset($_POST['nombreUsuario'], $_POST['contrasenia'],
+            $_POST['nombre'], $_POST['apellidos'], $_POST['correo'], $_POST['telefono'])) {
+            return $response
+                ->withJson(
+                    [
+                        'code' => 422,
+                        'message' => 'Faltan datos del usuario'
+                    ],
+                    422
+                );
+        }
+        $entityManager = getEntityManager();
+        /** @var Usuario $usuario */
+        $usuario = new Usuario(
+            $_POST['nombreUsuario'],
+            $_POST['contrasenia'],
+            $_POST['nombre'],
+            $_POST['apellidos'],
+            $_POST['correo'],
+            $_POST['telefono']);
+
+        $entityManager->persist($usuario);
+        $entityManager->flush();
+
+        return $response->withStatus(201);
+    }
+)->setName('tdw_post_registro');
+
+

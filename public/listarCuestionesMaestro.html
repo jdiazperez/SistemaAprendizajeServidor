@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="description" content="aprendizaje">
+    <meta name="keywords" content="aprendizaje">
+    <meta name="author" content="Jorge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Sistema de Aprendizaje</title>
+</head>
+
+<body onload="actualizarUsuarioIdentificado(); listarCuestiones();">
+
+    <header>
+        <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
+            <div class="container">
+                <span class="navbar-brand h1">Sistema de Aprendizaje</span>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" id="usuarioIdentificado"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-primary" href="editarCuestionMaestro.html" role="button" onclick="nuevaCuestion()"><i class="far fa-file-alt fa-lg mr-3"></i>Nueva Cuestión</a>
+                </div>
+            </div>
+        </div>
+
+        <div id="containerCuestiones" class="container mt-3"></div>
+    </section>
+
+    <script src="js/bootstrap/jquery-3.3.1.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
+    <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
+    <script src="js/listarCuestionesMaestro.js" charset="UTF-8"></script>
+
+</body>
+
+</html>
