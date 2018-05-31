@@ -22,7 +22,7 @@ trait Utils
     /**
      * Get .env filename (.env.docker || .env || .env.dist)
      *
-     * @param string $dir      directory
+     * @param string $dir directory
      * @param string $filename filename
      *
      * @return string
@@ -30,7 +30,8 @@ trait Utils
     public static function getEnvFileName(
         string $dir,
         string $filename = '.env'
-    ): string {
+    ): string
+    {
 
         if (isset($_ENV['docker'])) {
             return $filename . '.docker';
@@ -56,7 +57,8 @@ trait Utils
         string $email,
         string $password,
         bool $isAdmin = false
-    ) {
+    )
+    {
         $user = new Usuario(
             $username,
             $email,
@@ -98,18 +100,18 @@ trait Utils
      * @return string JWT token
      */
     public static function getToken(
-        int     $userId,
-        string  $username,
-        bool    $isAdmin = false
-    ): string {
+        int $userId,
+        string $username,
+        bool $isAdmin
+    ): string
+    {
 
         $current_time = time();
         $token = [
-            'iat'       => $current_time,
-            'exp'       => $current_time + 3600,    // expires in 60 minutes
-            'user_id'   => $userId,                 // user id.
-            'username'  => $username,               // user name
-            'isAdmin'   => $isAdmin,                // is admin?
+            'iat' => $current_time,
+            'exp' => $current_time + 3600,    // expires in 60 minutes
+            'user_id' => $userId,                 // user id.
+            'username' => $username,               // user name
             'isMaestro' => $isAdmin,                // is Maestro?
             // 'scope' => ['read', 'write', 'delete']
         ];

@@ -84,47 +84,73 @@ $app->get(
 $app->post(
     $_ENV['RUTA_LOGIN'],
     function (Request $request, Response $response): Response {
-        $req_data
-            = $request->getParsedBody()
-            ?? json_decode($request->getBody(), true);
 
         /** @var TDW18\Usuarios\Entity\Usuario $user */
         $user = null;
-        if (isset($req_data['username'], $req_data['password'])) {
+        if (isset($_POST['nombreUsuario'], $_POST['contrasenia'])) {
             $user = getEntityManager()
                 ->getRepository(Usuario::class)
-                ->findOneBy(['username' => $req_data['username']]);
-        }
+                ->findOneBy(['nombreUsuario' => $_POST['nombreUsuario']]);
 
-        if (null === $user || !$user->validatePassword($req_data['password'])) {
+            if (null === $user || !$user->validatePassword($_POST['contrasenia'])) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['status' => 404]
+                );
+                return $response
+                    ->withJson(
+                        [
+                            'code' => 404,
+                            'message' => Messages::MESSAGES['tdw_post_login_404']
+                        ],
+                        404
+                    );
+            } elseif (!$user->isActivo()) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['status' => 403]
+                );
+                return $response
+                    ->withJson(
+                        [
+                            'code' => 403,
+                            'message' => 'No tiene permiso de acceso'
+                        ],
+                        403
+                    );
+            } else {
+                $json_web_token = \TDW18\Usuarios\Utils::getToken(
+                    $user->getId(),
+                    $user->getNombreUsuario(),
+                    $user->isMaestro()
+                );
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $user->getId(), 'status' => 200]
+                );
+
+                /*                return $response
+                                    ->withJson(['X-Token' => $json_web_token])
+                                    ->withAddedHeader('X-Token', $json_web_token);*/
+                return $response->withJson(['jwt' => $json_web_token, 'usuario' => $user]);
+            }
+
+        } else {
             $this->logger->info(
                 $request->getMethod() . ' ' . $request->getUri()->getPath(),
-                ['status' => 404]
+                ['uid' => $user->getId(), 'status' => 422]
             );
-
             return $response
                 ->withJson(
                     [
-                        'code' => 404,
-                        'message' => Messages::MESSAGES['tdw_post_login_404']
+                        'code' => 422,
+                        'message' => 'Faltan datos del usuario'
                     ],
-                    404
+                    422
                 );
         }
 
-        $json_web_token = \TDW18\Usuarios\Utils::getToken(
-            $user->getId(),
-            $user->getUsername(),
-            $user->isAdmin()
-        );
-        $this->logger->info(
-            $request->getMethod() . ' ' . $request->getUri()->getPath(),
-            ['uid' => $user->getId(), 'status' => 200]
-        );
 
-        return $response
-            ->withJson(['X-Token' => $json_web_token])
-            ->withAddedHeader('X-Token', $json_web_token);
     }
 )->setName('tdw_post_login');
 

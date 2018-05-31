@@ -26,14 +26,34 @@
                         <a class="nav-link" id="usuarioIdentificado"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Cerrar Sesión</a>
+                        <a class="nav-link" href="login.html">Cerrar Sesión</a>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <a class="btn btn-lg btn-info active" href="maestroGestionCuestiones.html"><i class="fas fa-book mr-3"></i>Gestión de Cuestiones</a>
 
-    <section>        
+                </div>
+                <div class="col-lg-3">
+                    <a class="btn btn-lg btn-info" href="#"><i class="fas fa-users mr-3"></i>Gestión de Usuarios</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-secondary" href="editarCuestionMaestro.html" role="button" onclick="nuevaCuestion()"><i class="far fa-file-alt fa-lg mr-3"></i>Nueva Cuestión</a>
+                </div>
+            </div>
+        </div>
+
         <div id="containerCuestiones" class="container mt-3"></div>
     </section>
 
@@ -41,7 +61,7 @@
     <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
     <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
-    <script src="js/listarCuestionesAprendiz.js" charset="UTF-8"></script>
+    <!--<script src="js/listarCuestionesMaestro.js" charset="UTF-8"></script>-->
 
 </body>
 

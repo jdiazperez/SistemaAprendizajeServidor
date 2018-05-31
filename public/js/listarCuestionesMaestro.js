@@ -1,6 +1,10 @@
 var datos;
 
-function listarCuestiones() {
+function listarCuestiones(){
+    
+}
+
+function listarCuestiones2() {
     datos = JSON.parse(localStorage.getItem("datos"));
     var containerCuestiones = document.querySelector("#containerCuestiones");
 

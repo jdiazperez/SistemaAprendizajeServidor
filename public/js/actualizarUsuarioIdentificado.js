@@ -1,5 +1,12 @@
 function actualizarUsuarioIdentificado() {
     var navLinkUsuario = document.querySelector("#usuarioIdentificado");
     var usuarioIdentificado = JSON.parse(localStorage.getItem("usuarioIdentificado"));
-    navLinkUsuario.textContent = usuarioIdentificado.tipo + ": " + usuarioIdentificado.nombre;
+    var rolUsuario;
+    if(usuarioIdentificado.usuario.maestro){
+        rolUsuario = "Maestro";
+    }
+    else{
+        rolUsuario = "Aprendiz";
+    }
+    navLinkUsuario.textContent = rolUsuario + ": " + usuarioIdentificado.usuario.nombreUsuario;
 }

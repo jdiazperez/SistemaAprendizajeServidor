@@ -245,17 +245,20 @@ class Usuario implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'usuario' => [
-                'id' => $this->getId(),
-                'nombreUsuario' => $this->getNombreUsuario(),
-                'contrasenia' => $this->getContrasenia(),
-                'maestro' => $this->isMaestro(),
-                'activo' => $this->isActivo(),
-                'nombre' => $this->getNombre(),
-                'apellidos' => $this->getApellidos(),
-                'correo' => $this->getCorreo(),
-                'telefono' => $this->getTelefono(),
-            ]
+            'id' => $this->getId(),
+            'nombreUsuario' => $this->getNombreUsuario(),
+            'contrasenia' => $this->getContrasenia(),
+            'maestro' => $this->isMaestro(),
+            'activo' => $this->isActivo(),
+            'nombre' => $this->getNombre(),
+            'apellidos' => $this->getApellidos(),
+            'correo' => $this->getCorreo(),
+            'telefono' => $this->getTelefono()
         ];
+    }
+
+    public function validatePassword($contrasenia)
+    {
+        return password_verify($contrasenia, $this->contrasenia);
     }
 }

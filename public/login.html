@@ -10,6 +10,7 @@
     <meta name="keywords" content="aprendizaje">
     <meta name="author" content="Jorge">
     <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <title>Sistema de Aprendizaje</title>
 </head>
@@ -31,14 +32,14 @@
                     <h1 class="text-center">Iniciar Sesión</h1>
                 </div>
             </div>
-            <form onsubmit="return validacion()">
+            <form id="formLogin" onsubmit="return login()">
                 <div class="row justify-content-center">
                     <div class="col-lg-8 bg-light">
                         <div class="row justify-content-center">
                             <div class="col-8">
                                 <div class="form-group">
-                                    <label for="usuario">Usuario</label>
-                                    <input type="text" id="usuario" class="form-control" required>
+                                    <label for="nombreUsuario">Usuario</label>
+                                    <input type="text" id="nombreUsuario" name="nombreUsuario" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -50,8 +51,8 @@
                         <div class="row justify-content-center">
                             <div class="col-8">
                                 <div class="form-group">
-                                    <label for="contraseña">Contraseña</label>
-                                    <input type="password" id="contraseña" class="form-control" required>
+                                    <label for="contrasenia">Contraseña</label>
+                                    <input type="password" id="contrasenia" name="contrasenia" class="form-control" required>
                                 </div>
                             </div>
                         </div>
@@ -71,6 +72,12 @@
             </form>
             <div class="row justify-content-center">
                 <div class="col-lg-8 bg-light">
+                    <div id="alertDatosIncorrectos" class="alert alert-danger mt-3 oculto"><i class="fas fa-times mr-2"></i>El nombre de usuario y/o la contraseña son incorrectos</div>
+                    <div id="alertAccesoDenegado" class="alert alert-danger mt-3 oculto"><i class="fas fa-times mr-2"></i>Acceso denegado: La cuenta necesita ser validada por un maestro</div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8 bg-light">
                     <div class="row mt-4 mb-5 align-items-center">
                         <div class="col-8 text-right">
                             ¿Todavía no estás registrado?
@@ -88,7 +95,7 @@
     <script src="js/bootstrap/jquery-3.3.1.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
-    <script src="js/identificacion.js" charset="UTF-8"></script>
+    <script src="js/login.js" charset="UTF-8"></script>
 
 </body>
 
