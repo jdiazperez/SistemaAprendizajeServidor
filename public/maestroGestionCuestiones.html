@@ -15,7 +15,7 @@
     <title>Sistema de Aprendizaje</title>
 </head>
 
-<body onload="actualizarUsuarioIdentificado(); listarCuestiones();">
+<body onload="actualizarUsuarioIdentificado(); getCuestiones();">
 
     <header>
         <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
@@ -51,6 +51,11 @@
                 <div class="col">
                     <a class="btn btn-secondary" href="editarCuestionMaestro.html" role="button" onclick="nuevaCuestion()"><i class="far fa-file-alt fa-lg mr-3"></i>Nueva Cuestión</a>
                 </div>
+            </div>            
+            <div class="row">
+                <div class="col">
+                    <div id="alertError" class="alert alert-danger mt-3 oculto"><i class="fas fa-times mr-2"></i>Error al acceder al servidor</div>
+                </div>
             </div>
         </div>
 
@@ -61,7 +66,7 @@
     <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
     <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
-    <!--<script src="js/listarCuestionesMaestro.js" charset="UTF-8"></script>-->
+    <script src="js/listarCuestionesMaestro.js" charset="UTF-8"></script>
 
 </body>
 

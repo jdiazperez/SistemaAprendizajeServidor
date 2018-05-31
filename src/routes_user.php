@@ -546,3 +546,48 @@ $app->put(
         }
     }
 )->setName('tdw_put_users');
+
+/** Obtener Cuestiones*/
+
+$app->get(
+    $_ENV['RUTA_API'] . '/cuestiones',
+    function (Request $request, Response $response): Response {
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => Messages::MESSAGES['tdw_cget_users_403']
+                    ],
+                    403
+                );
+        }
+        $cuestiones = getEntityManager()
+            ->getRepository(\TDW18\Usuarios\Entity\Cuestion::class)
+            ->findAll();
+
+        if ($cuestiones === null) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 404]
+            );
+            return $response->withJson([
+                'code' => 404,
+                'message' => 'Error al acceder a la base de datos'
+            ],
+                404);
+        } else {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 200]
+            );
+            return $response
+                ->withJson($cuestiones, 200);
+        }
+    }
+)->setName('tdw_get_cuestiones');

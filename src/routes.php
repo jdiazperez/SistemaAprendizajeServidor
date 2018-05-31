@@ -129,9 +129,6 @@ $app->post(
                     ['uid' => $user->getId(), 'status' => 200]
                 );
 
-                /*                return $response
-                                    ->withJson(['X-Token' => $json_web_token])
-                                    ->withAddedHeader('X-Token', $json_web_token);*/
                 return $response->withJson(['jwt' => $json_web_token, 'usuario' => $user]);
             }
 

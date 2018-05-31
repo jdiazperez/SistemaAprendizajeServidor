@@ -117,12 +117,10 @@ class Cuestion implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'cuestion' => [
-                'id' => $this->getId(),
-                'enunciado' => $this->getEnunciado(),
-                'disponible' => $this->isDisponible(),
-                'idUsuario' => $this->getIdUsuario()
-            ]
+            'id' => $this->getId(),
+            'enunciado' => $this->getEnunciado(),
+            'disponible' => $this->isDisponible(),
+            'idUsuario' => $this->getIdUsuario()
         ];
     }
 }

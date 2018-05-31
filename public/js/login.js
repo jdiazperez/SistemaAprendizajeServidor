@@ -18,7 +18,7 @@ function comprobarCodLogin() {
         var usuarioIdentificado = httpRequest.response;
         localStorage.setItem("usuarioIdentificado", JSON.stringify(usuarioIdentificado));
         if(usuarioIdentificado.usuario.maestro){
-            window.location.href = "/maestroGestionCuestiones";
+            window.location.href = "/maestroGestionCuestiones.html";
         }
         else{
             window.location.href = "/listarCuestionesAprendiz.html";
