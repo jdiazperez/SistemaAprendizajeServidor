@@ -620,8 +620,6 @@ $app->delete(
                 ->findOneBy(['id' => $args['id']]);
 
             if ($cuestion === null) {
-                $this->logger->addInfo('Cuestion=null. No se ha recuperado la cuestion');
-
                 $this->logger->info(
                     $request->getMethod() . ' ' . $request->getUri()->getPath(),
                     ['uid' => $this->jwt->user_id, 'status' => 404]
@@ -708,3 +706,55 @@ $app->get(
         }
     }
 )->setName('tdw_get_razonamientos');
+
+/** Eliminar una solución dado su id */
+
+$app->delete(
+    $_ENV['RUTA_API'] . '/soluciones/{id:[0-9]+}',
+    function (Request $request, Response $response, $args): Response {
+
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se requieren permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Solucion $solucion */
+            $solucion = $entityManager
+                ->getRepository(\TDW18\Usuarios\Entity\Solucion::class)
+                ->findOneBy(['id' => $args['id']]);
+
+            if ($solucion === null) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'No existe esa solución'
+                    ],
+                    404
+                );
+            } else {
+                $entityManager->remove($solucion);
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 204]
+                );
+                return $response->withStatus(204);
+            }
+        }
+    }
+)->setName('tdw_delete_soluciones');

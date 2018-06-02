@@ -2,7 +2,9 @@ var usuarioIdentificado = JSON.parse(localStorage.getItem("usuarioIdentificado")
 var idCuestion;
 var cuestion;
 var soluciones = [];
+var numSoluciones = 0;
 var razonamientos = [];
+var numRazonamientos = [];
 var sectionCuestion;
 
 function mostrarCuestion() {
@@ -61,6 +63,7 @@ function getSoluciones() {
 function comprobarCodGetSoluciones() {
     if (httpRequest.status === 200) {
         soluciones = httpRequest.response;
+        numSoluciones = soluciones.length;
         var requestRazonamientos = [];
         for (var i = 0; i < soluciones.length; i++) {
             requestRazonamientos[i] = new XMLHttpRequest();
@@ -85,6 +88,7 @@ function getRazonamientos(request, i) {
 function comprobarCodGetRazonamientos(request, i) {
     if (request.status === 200) {
         razonamientos[i] = request.response;
+        numRazonamientos[i] = razonamientos[i].length;
         for (var j = 0; j < razonamientos[i].length; j++) {
             rellenarRazonamiento(razonamientos[i][j], i + 1, j + 1);
         }
@@ -94,23 +98,9 @@ function comprobarCodGetRazonamientos(request, i) {
     }
 }
 
-function rellenarCampos(containerEnunciado) {
-    /*    containerEnunciado.querySelector("#enunciado").value = cuestion.enunciado;
-        if (cuestion.disponible) {
-            containerEnunciado.querySelector("#disponible").checked = true;
-        }*/
-
-    /*    if (cuestion.hasOwnProperty("soluciones")) {
-            var soluciones = cuestion.soluciones;
-
-            for (var i = 1; i <= soluciones.length; i++) {
-                rellenarSolucion(soluciones[i - 1], i);
-            }
-        }*/
-}
-
-function rellenarSolucion(solucion, i) {    
+function rellenarSolucion(solucion, i) {
     var containerSolucion = crearContainerSolucion(solucion.propuestaPorAlumno, solucion.respuesta, i);
+    containerSolucion.setAttribute("data-id", solucion.id);
     sectionCuestion.appendChild(containerSolucion);
 
     if (solucion.propuestaPorAlumno) {
@@ -119,7 +109,7 @@ function rellenarSolucion(solucion, i) {
         divOpcionesSolucion.innerHTML =
             '<div class="row mt-3 ml-1">' +
             '<button class="btn btn-success" onclick="corregirSolucion(' + i + ')"><i class="fas fa-check-circle mr-2"></i>Corregir Solución</button>' +
-            '<button class="btn btn-danger ml-3" onclick="eliminarSolucion(' + i + ')"><i class="fas fa-trash-alt mr-2"></i>Eliminar Solución</button>' +
+            '<button class="btn btn-danger ml-3" type="button" onclick="eliminarSolucion(' + i + ')"><i class="fas fa-trash-alt mr-2"></i>Eliminar Solución</button>' +
             '</div>';
         containerSolucion.appendChild(document.createElement("hr"));
         containerSolucion.appendChild(divOpcionesSolucion);
@@ -136,12 +126,6 @@ function rellenarSolucion(solucion, i) {
 
         } else {
             containerSolucion.querySelector("#incorrecta" + i).checked = true;
-
-            /*for (var j = 1; j <= solucion.razonamientos.length; j++) {
-
-                rellenarRazonamiento(containerSolucion, solucion.razonamientos[j - 1], i, j);
-            }*/
-
             containerSolucion.appendChild(document.createElement("hr"));
             var divOpcionesSolucion = crearDivOpcionesSolucion(i);
             containerSolucion.appendChild(divOpcionesSolucion);
@@ -189,6 +173,7 @@ function crearContainerSolucion(propuestaPorAlumno, respuesta, i) {
 
 function rellenarRazonamiento(razonamiento, i, j) {
     var containerSolucion = document.querySelector("#solucion" + i);
+    var divOpciones = document.querySelector("#opciones" + i);
     var divRazonamiento = crearDivRazonamiento(razonamiento.propuestoPorAlumno, razonamiento.texto, i, j);
 
     if (razonamiento.propuestoPorAlumno) {
@@ -215,8 +200,9 @@ function rellenarRazonamiento(razonamiento, i, j) {
         divRazonamiento.appendChild(divEliminarRazonamiento);
 
     }
-    containerSolucion.appendChild(document.createElement("hr"));
-    containerSolucion.appendChild(divRazonamiento);
+    containerSolucion.insertBefore(divRazonamiento, divOpciones);
+    containerSolucion.insertBefore(document.createElement("hr"), divOpciones);
+
 }
 
 function crearDivRazonamiento(propuestoPorAlumno, textoRazonamiento, i, j) {
@@ -266,7 +252,7 @@ function crearDivEliminarSolucion(i) {
     divEliminarSolucion.id = "opciones" + i;
     divEliminarSolucion.innerHTML =
         '<div class="row mt-3 ml-1">' +
-        '<button class="btn btn-danger" onclick="eliminarSolucion(' + i + ')"><i class="fas fa-trash-alt mr-2"></i>Eliminar Solución</button>' +
+        '<button class="btn btn-danger" type="button" onclick="eliminarSolucion(' + i + ')"><i class="fas fa-trash-alt mr-2"></i>Eliminar Solución</button>' +
         '</div>';
     return divEliminarSolucion;
 }
@@ -277,7 +263,7 @@ function crearDivOpcionesSolucion(i) {
     divOpcionesSolucion.innerHTML =
         '<div class="row mt-3 ml-1">' +
         '<button class="btn btn-info" onclick="añadirRazonamiento(' + i + ')"><i class="far fa-comment-alt mr-2"></i>Añadir Razonamiento</button>' +
-        '<button class="btn btn-danger ml-3" onclick="eliminarSolucion(' + i + ')"><i class="fas fa-trash-alt mr-2"></i>Eliminar Solución</button>' +
+        '<button class="btn btn-danger ml-3" type="button" onclick="eliminarSolucion(' + i + ')"><i class="fas fa-trash-alt mr-2"></i>Eliminar Solución</button>' +
         '</div>';
     return divOpcionesSolucion;
 }
@@ -321,6 +307,7 @@ function nuevaSolucion() {
     numSoluciones++;
 
     containerSolucion = crearContainerSolucion(false, "", idSolucion);
+    containerSolucion.setAttribute("data-id", "0");
 
     divEliminarSolucion = crearDivEliminarSolucion(idSolucion);
     containerSolucion.appendChild(document.createElement("hr"));
@@ -337,13 +324,43 @@ function nuevaSolucion() {
 }
 
 function eliminarSolucion(i) {
-    var containerSolucion = document.querySelector("#solucion" + i);
-    eliminar(containerSolucion);
-    numSoluciones--;
+    document.querySelector(".modal-title").textContent = "Eliminar Solución " + i;
+    document.querySelector(".modal-body").textContent = "¿Estás seguro de que deseas eliminar la solución?: " + document.querySelector("#textSolucion" + i).value;
+    document.querySelector(".modal-footer").innerHTML = '<button class="btn btn-danger" data-dismiss="modal" type="button"><i class="fas fa-times mr-2"></i>No</button><button id="btnEliminarModal" class="btn btn-success" type="button"><i class="fas fa-check mr-2"></i>Si</button>';
+    document.querySelector("#btnEliminarModal").addEventListener("click", function () {
+        eliminarSolucion2(i);
+    });
+    $('#modalAdvertencia').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+}
 
-    if (numSoluciones === 0) {
-        document.querySelector("#disponible").checked = false;
+function eliminarSolucion2(i) {
+    var idSolucion = document.querySelector("solucion" + i).getAttribute("data-id");
+    httpRequest = new XMLHttpRequest();
+    httpRequest.open("DELETE", "/api/t/soluciones/" + idSolucion, true);
+    httpRequest.responseType = "json";
+    httpRequest.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+    httpRequest.onload = function () {
+        comprobarCodEliminarSolucion(i);
+    };
+    httpRequest.send();
+}
+
+function comprobarCodEliminarSolucion(i) {
+    if (httpRequest.status === 204) {
+        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-check-circle text-success h2 mr-2"></i> Solución eliminada correctamente';
+        var containerSolucion = document.querySelector("#solucion" + i);
+        eliminar(containerSolucion);
+        numSoluciones--;
+        if (numSoluciones === 0) {
+            document.querySelector("#disponible").checked = false;
+        }
+    } else {
+        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-exclamation-triangle text-danger h2 mr-2"></i> Error en el servidor. Inténtelo de nuevo más tarde.';
     }
+    document.querySelector(".modal-footer").innerHTML = '<button class="btn btn-secondary" data-dismiss="modal" type="button"><i class="fas fa-times mr-2"></i>Cerrar</button>';
 }
 
 function eliminar(elem) {

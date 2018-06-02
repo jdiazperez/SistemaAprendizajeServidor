@@ -80,10 +80,6 @@ function comprobarCodEliminarCuestion() {
     }
 }
 
-function recargarPag() {
-    location.href = location.href;
-}
-
 function nuevaCuestion() {
     localStorage.setItem("editarCuestion", null);
 }
