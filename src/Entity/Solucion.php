@@ -47,7 +47,7 @@ class Solucion implements \JsonSerializable
      *
      * @ORM\ManyToOne(targetEntity="Cuestion")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idCuestion", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="idCuestion", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $idCuestion;
@@ -57,7 +57,7 @@ class Solucion implements \JsonSerializable
      *
      * @ORM\ManyToOne(targetEntity="Usuario")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idUsuario", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="idUsuario", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $idUsuario;
@@ -163,14 +163,12 @@ class Solucion implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'solucion' => [
-                'id' => $this->getId(),
-                'respuesta' => $this->getRespuesta(),
-                'correcta' => $this->isCorrecta(),
-                'propuestaPorAlumno' => $this->isPropuestaPorAlumno(),
-                'idCuestion' => $this->getIdCuestion(),
-                'idUsuario' => $this->getIdUsuario()
-            ]
+            'id' => $this->getId(),
+            'respuesta' => $this->getRespuesta(),
+            'correcta' => $this->isCorrecta(),
+            'propuestaPorAlumno' => $this->isPropuestaPorAlumno(),
+            'idCuestion' => $this->getIdCuestion(),
+            'idUsuario' => $this->getIdUsuario()
         ];
     }
 }

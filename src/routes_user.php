@@ -562,7 +562,7 @@ $app->get(
                 ->withJson(
                     [
                         'code' => 403,
-                        'message' => Messages::MESSAGES['tdw_cget_users_403']
+                        'message' => 'Se requieren permisos de Maestro'
                     ],
                     403
                 );
@@ -591,3 +591,120 @@ $app->get(
         }
     }
 )->setName('tdw_get_cuestiones');
+
+
+/** Eliminar una cuestión dado su id */
+
+$app->delete(
+    $_ENV['RUTA_API'] . '/cuestiones/{id:[0-9]+}',
+    function (Request $request, Response $response, $args): Response {
+
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se requieren permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Cuestion $cuestion */
+            $cuestion = $entityManager
+                ->getRepository(\TDW18\Usuarios\Entity\Cuestion::class)
+                ->findOneBy(['id' => $args['id']]);
+
+            if ($cuestion === null) {
+                $this->logger->addInfo('Cuestion=null. No se ha recuperado la cuestion');
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'No existe esa cuestión'
+                    ],
+                    404
+                );
+            } else {
+                $entityManager->remove($cuestion);
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 204]
+                );
+                return $response->withStatus(204);
+            }
+        }
+    }
+)->setName('tdw_delete_cuestiones');
+
+
+/** Obtener soluciones dado el id de la cuestión a la que pertenecen */
+
+$app->get(
+    $_ENV['RUTA_API'] . '/soluciones/{idCuestion:[0-9]+}',
+    function (Request $request, Response $response, $args): Response {
+        $soluciones = getEntityManager()
+            ->getRepository(\TDW18\Usuarios\Entity\Solucion::class)
+            ->findBy(['idCuestion' => $args['idCuestion']]);
+
+        if ($soluciones === null) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 404]
+            );
+            return $response->withJson([
+                'code' => 404,
+                'message' => 'Error al acceder a la base de datos'
+            ],
+                404);
+        } else {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 200]
+            );
+            return $response
+                ->withJson($soluciones, 200);
+        }
+    }
+)->setName('tdw_get_soluciones');
+
+/** Obtener razonamientos dado el id de la solución a la que pertenecen */
+
+$app->get(
+    $_ENV['RUTA_API'] . '/razonamientos/{idSolucion:[0-9]+}',
+    function (Request $request, Response $response, $args): Response {
+        $razonamientos = getEntityManager()
+            ->getRepository(\TDW18\Usuarios\Entity\Razonamiento::class)
+            ->findBy(['idSolucion' => $args['idSolucion']]);
+
+        if ($razonamientos === null) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 404]
+            );
+            return $response->withJson([
+                'code' => 404,
+                'message' => 'Error al acceder a la base de datos'
+            ],
+                404);
+        } else {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 200]
+            );
+
+            return $response
+                ->withJson($razonamientos, 200);
+        }
+    }
+)->setName('tdw_get_razonamientos');

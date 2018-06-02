@@ -27,7 +27,7 @@
                     </div>
                 </div>
                 <div class="col-md">
-                    <a href="listarCuestionesMaestro.html" class="btn btn-danger"><i class="fa fa-times mr-2"></i>Cancelar</a>
+                    <a href="maestroGestionCuestiones.html" class="btn btn-danger"><i class="fa fa-times mr-2"></i>Cancelar</a>
                     <button type="submit" form="cuestion" class="btn btn-success ml-2" id="submitGuardar"><i class="fa fa-save mr-2"></i>Guardar</button>
                 </div>
             </div>
@@ -43,7 +43,7 @@
                         <a id="usuarioIdentificado" class="nav-link"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Cerrar Sesión</a>
+                        <a class="nav-link" href="login.html">Cerrar Sesión</a>
                     </li>
                 </ul>
             </div>
@@ -51,7 +51,12 @@
     </header>
 
     <section id="sectionCuestion">
-        <form action="listarCuestionesMaestro.html" onsubmit="return guardarCuestion()" id="cuestion">
+        <div class="row">
+            <div class="col">
+                <div id="alertError" class="alert alert-danger mt-3 oculto"><i class="fas fa-times mr-2"></i>Error al acceder al servidor</div>
+            </div>
+        </div>
+        <form onsubmit="return guardarCuestion()" id="cuestion">
         </form>
     </section>
 
@@ -65,7 +70,7 @@
     <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
     <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
-    <script src="js/editarCuestionMaestro.js" charset="UTF-8"></script>
+    <script src="js/maestroEditarCuestion.js" charset="UTF-8"></script>
 
 </body>
 

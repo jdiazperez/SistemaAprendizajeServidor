@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Usuario
  *
- * @ORM\Table(name="usuarios", uniqueConstraints={@ORM\UniqueConstraint(name="nombreUsuario", columns={"nombreUsuario"}), @ORM\UniqueConstraint(name="correo", columns={"correo"})})
+ * @ORM\Table(name="usuarios", uniqueConstraints={@ORM\UniqueConstraint(name="nombreUsuario", columns={"nombreUsuario"})})
  * @ORM\Entity
  */
 class Usuario implements \JsonSerializable
@@ -31,7 +31,7 @@ class Usuario implements \JsonSerializable
     /**
      * @var string
      *
-     * @ORM\Column(name="contrasenia", type="string", length=20, nullable=false)
+     * @ORM\Column(name="contrasenia", type="string", length=80, nullable=false)
      */
     private $contrasenia;
 

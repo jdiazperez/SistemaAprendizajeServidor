@@ -40,7 +40,7 @@ class Cuestion implements \JsonSerializable
      *
      * @ORM\ManyToOne(targetEntity="Usuario")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="idUsuario", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="idUsuario", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $idUsuario;

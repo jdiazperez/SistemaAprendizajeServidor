@@ -12,6 +12,7 @@ use TDW18\Usuarios\Messages;
 require_once __DIR__ . '/../bootstrap.php';
 
 require __DIR__ . '/routes_user.php';
+require __DIR__ . '/redirecciones.php';
 
 /**  @var \Slim\App $app */
 /** @noinspection PhpUnusedParameterInspection */
@@ -97,6 +98,8 @@ $app->post(
                     $request->getMethod() . ' ' . $request->getUri()->getPath(),
                     ['status' => 404]
                 );
+                $this->logger->info($request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['user' => $user, 'postContrasenia' => $_POST['contrasenia'], $user->validatePassword($_POST['contrasenia'])]);
                 return $response
                     ->withJson(
                         [

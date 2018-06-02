@@ -1,17 +1,13 @@
-var datos;
+var usuarioIdentificado = JSON.parse(localStorage.getItem("usuarioIdentificado"));
 var idCuestion;
 var cuestion;
-var numSoluciones = 0;
-var numRazonamientos = [];
+var soluciones = [];
+var razonamientos = [];
 var sectionCuestion;
 
 function mostrarCuestion() {
-    datos = JSON.parse(localStorage.getItem("datos"));
-    idCuestion = localStorage.getItem("editarCuestion");
-    cuestion = datos.cuestiones[idCuestion - 1];
-
+    cuestion = JSON.parse(localStorage.getItem("editarCuestion"));
     sectionCuestion = document.querySelector("#cuestion");
-
     var containerEnunciado = document.createElement("div");
     containerEnunciado.className = "container bg-light border p-4 mt-5";
     containerEnunciado.innerHTML =
@@ -30,38 +26,90 @@ function mostrarCuestion() {
         "</div>";
     sectionCuestion.appendChild(containerEnunciado);
 
-    if (cuestion !== undefined) {
-        numSoluciones = cuestion.soluciones.length;
+    if (cuestion !== null) {
+        idCuestion = cuestion.id;
+        /*        numSoluciones = cuestion.soluciones.length;
 
-        for (var i = 0; i < numSoluciones; i++) {
-            if (cuestion.soluciones[i].hasOwnProperty("razonamientos")) {
-                numRazonamientos[i] = cuestion.soluciones[i].razonamientos.length;
-            } else {
-                numRazonamientos[i] = 0;
-            }
+                for (var i = 0; i < numSoluciones; i++) {
+                    if (cuestion.soluciones[i].hasOwnProperty("razonamientos")) {
+                        numRazonamientos[i] = cuestion.soluciones[i].razonamientos.length;
+                    } else {
+                        numRazonamientos[i] = 0;
+                    }
+                }*/
+        getSoluciones();
+        containerEnunciado.querySelector("#enunciado").value = cuestion.enunciado;
+        if (cuestion.disponible) {
+            containerEnunciado.querySelector("#disponible").checked = true;
         }
-        rellenarCampos(containerEnunciado);
+        //rellenarCampos(containerEnunciado);
+
     } else {
-        numSoluciones = 0;
-        numRazonamientos = [];
+        alert("Nueva cuestion");
+    }
+}
+
+function getSoluciones() {
+    httpRequest = new XMLHttpRequest();
+    httpRequest.open("GET", "/api/t/soluciones/" + idCuestion, true);
+    httpRequest.responseType = "json";
+    httpRequest.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+    httpRequest.onload = comprobarCodGetSoluciones;
+    httpRequest.send();
+}
+
+function comprobarCodGetSoluciones() {
+    if (httpRequest.status === 200) {
+        soluciones = httpRequest.response;
+        var requestRazonamientos = [];
+        for (var i = 0; i < soluciones.length; i++) {
+            requestRazonamientos[i] = new XMLHttpRequest();
+            getRazonamientos(requestRazonamientos[i], i);
+            rellenarSolucion(soluciones[i], i + 1);
+        }
+    } else {
+        document.querySelector("#alertError").classList.remove("oculto");
+    }
+}
+
+function getRazonamientos(request, i) {
+    request.open("GET", "/api/t/razonamientos/" + soluciones[i].id, true);
+    request.responseType = "json";
+    request.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+    request.onload = function () {
+        comprobarCodGetRazonamientos(request, i);
+    };
+    request.send();
+}
+
+function comprobarCodGetRazonamientos(request, i) {
+    if (request.status === 200) {
+        razonamientos[i] = request.response;
+        for (var j = 0; j < razonamientos[i].length; j++) {
+            rellenarRazonamiento(razonamientos[i][j], i + 1, j + 1);
+        }
+    } else {
+        razonamientos[i] = [];
+        document.querySelector("#alertError").classList.remove("oculto");
     }
 }
 
 function rellenarCampos(containerEnunciado) {
-    containerEnunciado.querySelector("#enunciado").value = cuestion.enunciado;
-    if (cuestion.disponible) {
-        containerEnunciado.querySelector("#disponible").checked = true;
-    }
-    if (cuestion.hasOwnProperty("soluciones")) {
-        var soluciones = cuestion.soluciones;
+    /*    containerEnunciado.querySelector("#enunciado").value = cuestion.enunciado;
+        if (cuestion.disponible) {
+            containerEnunciado.querySelector("#disponible").checked = true;
+        }*/
 
-        for (var i = 1; i <= soluciones.length; i++) {
-            rellenarSolucion(soluciones[i - 1], i);
-        }
-    }
+    /*    if (cuestion.hasOwnProperty("soluciones")) {
+            var soluciones = cuestion.soluciones;
+
+            for (var i = 1; i <= soluciones.length; i++) {
+                rellenarSolucion(soluciones[i - 1], i);
+            }
+        }*/
 }
 
-function rellenarSolucion(solucion, i) {
+function rellenarSolucion(solucion, i) {    
     var containerSolucion = crearContainerSolucion(solucion.propuestaPorAlumno, solucion.respuesta, i);
     sectionCuestion.appendChild(containerSolucion);
 
@@ -89,10 +137,10 @@ function rellenarSolucion(solucion, i) {
         } else {
             containerSolucion.querySelector("#incorrecta" + i).checked = true;
 
-            for (var j = 1; j <= solucion.razonamientos.length; j++) {
+            /*for (var j = 1; j <= solucion.razonamientos.length; j++) {
 
                 rellenarRazonamiento(containerSolucion, solucion.razonamientos[j - 1], i, j);
-            }
+            }*/
 
             containerSolucion.appendChild(document.createElement("hr"));
             var divOpcionesSolucion = crearDivOpcionesSolucion(i);
@@ -139,7 +187,8 @@ function crearContainerSolucion(propuestaPorAlumno, respuesta, i) {
     return containerSolucion;
 }
 
-function rellenarRazonamiento(containerSolucion, razonamiento, i, j) {
+function rellenarRazonamiento(razonamiento, i, j) {
+    var containerSolucion = document.querySelector("#solucion" + i);
     var divRazonamiento = crearDivRazonamiento(razonamiento.propuestoPorAlumno, razonamiento.texto, i, j);
 
     if (razonamiento.propuestoPorAlumno) {
