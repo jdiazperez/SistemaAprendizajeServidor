@@ -45,7 +45,7 @@ class Razonamiento implements \JsonSerializable
     /**
      * @var bool
      *
-     * @ORM\Column(name="propuestoPorAlumno", type="boolean", nullable=false)
+     * @ORM\Column(name="propuestoPorAlumno", type="boolean", nullable=true)
      */
     private $propuestoPorAlumno;
 
@@ -73,7 +73,7 @@ class Razonamiento implements \JsonSerializable
      * Razonamiento constructor.
      * @param string $texto
      * @param bool $justificado
-     * @param string $error
+     * @param string $error |null
      * @param bool $propuestoPorAlumno
      * @param Solucion $idSolucion
      * @param Usuario $idUsuario
@@ -190,7 +190,7 @@ class Razonamiento implements \JsonSerializable
             'id' => $this->getId(),
             'texto' => $this->getTexto(),
             'justificado' => $this->isJustificado(),
-            'error' => $this->getTexto(),
+            'error' => $this->getError(),
             'propuestoPorAlumno' => $this->isPropuestoPorAlumno(),
             'idSolucion' => $this->getIdSolucion(),
             'idUsuario' => $this->getIdUsuario()
