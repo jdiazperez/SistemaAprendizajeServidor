@@ -337,30 +337,41 @@ function eliminarSolucion(i) {
 }
 
 function eliminarSolucion2(i) {
-    var idSolucion = document.querySelector("solucion" + i).getAttribute("data-id");
-    httpRequest = new XMLHttpRequest();
-    httpRequest.open("DELETE", "/api/t/soluciones/" + idSolucion, true);
-    httpRequest.responseType = "json";
-    httpRequest.setRequestHeader("X-Token", usuarioIdentificado.jwt);
-    httpRequest.onload = function () {
-        comprobarCodEliminarSolucion(i);
-    };
-    httpRequest.send();
+    var idSolucion = document.querySelector("#solucion" + i).getAttribute("data-id");
+    console.log("Eliminar solucion: " + idSolucion);
+    if (idSolucion != 0) {
+        httpRequest = new XMLHttpRequest();
+        httpRequest.open("DELETE", "/api/t/soluciones/" + idSolucion, true);
+        httpRequest.responseType = "json";
+        httpRequest.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+        httpRequest.onload = function () {
+            comprobarCodEliminarSolucion(i);
+        };
+        httpRequest.send();
+    } else {
+        eliminarContainerSolucion(i);
+        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-check-circle text-success h2 mr-2"></i> Solución eliminada correctamente';
+        document.querySelector(".modal-footer").innerHTML = '<button class="btn btn-secondary" data-dismiss="modal" type="button"><i class="fas fa-times mr-2"></i>Cerrar</button>';
+    }
 }
 
 function comprobarCodEliminarSolucion(i) {
     if (httpRequest.status === 204) {
         document.querySelector(".modal-body").innerHTML = '<i class="fas fa-check-circle text-success h2 mr-2"></i> Solución eliminada correctamente';
-        var containerSolucion = document.querySelector("#solucion" + i);
-        eliminar(containerSolucion);
-        numSoluciones--;
-        if (numSoluciones === 0) {
-            document.querySelector("#disponible").checked = false;
-        }
+        eliminarContainerSolucion(i);
     } else {
         document.querySelector(".modal-body").innerHTML = '<i class="fas fa-exclamation-triangle text-danger h2 mr-2"></i> Error en el servidor. Inténtelo de nuevo más tarde.';
     }
     document.querySelector(".modal-footer").innerHTML = '<button class="btn btn-secondary" data-dismiss="modal" type="button"><i class="fas fa-times mr-2"></i>Cerrar</button>';
+}
+
+function eliminarContainerSolucion(i) {
+    var containerSolucion = document.querySelector("#solucion" + i);
+    eliminar(containerSolucion);
+    numSoluciones--;
+    if (numSoluciones === 0) {
+        document.querySelector("#disponible").checked = false;
+    }
 }
 
 function eliminar(elem) {
