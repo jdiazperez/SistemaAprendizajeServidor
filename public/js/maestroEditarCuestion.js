@@ -473,6 +473,48 @@ function corregirRazonamiento(i, j) {
 }
 
 function eliminarRazonamiento(i, j) {
+    document.querySelector(".modal-title").textContent = "Eliminar Razonamiento " + j + " de la Solución " + i;
+    document.querySelector(".modal-body").textContent = "¿Estás seguro de que deseas eliminar el razonamiento?: " + document.querySelector("#textoRazonamiento" + j + "Solucion" + i).value;
+    document.querySelector(".modal-footer").innerHTML = '<button class="btn btn-danger" data-dismiss="modal" type="button"><i class="fas fa-times mr-2"></i>No</button><button id="btnEliminarModal" class="btn btn-success" type="button"><i class="fas fa-check mr-2"></i>Si</button>';
+    document.querySelector("#btnEliminarModal").addEventListener("click", function () {
+        eliminarRazonamiento2(i, j);
+    });
+    $('#modalAdvertencia').modal({
+        backdrop: 'static',
+        keyboard: false
+    });
+}
+
+function eliminarRazonamiento2(i, j) {
+    var idRazonamiento = document.querySelector("#razonamiento" + j + "Solucion" + i).getAttribute("data-id");
+    console.log("Eliminar Razonamiento: " + idRazonamiento);
+    if (idRazonamiento != 0) {
+        httpRequest = new XMLHttpRequest();
+        httpRequest.open("DELETE", "/api/t/razonamientos/" + idRazonamiento, true);
+        httpRequest.responseType = "json";
+        httpRequest.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+        httpRequest.onload = function () {
+            comprobarCodEliminarRazonamiento(i, j);
+        };
+        httpRequest.send();
+    } else {
+        eliminarDivRazonamiento(i, j);
+        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-check-circle text-success h2 mr-2"></i> Razonamiento eliminado correctamente';
+        document.querySelector(".modal-footer").innerHTML = '<button class="btn btn-secondary" data-dismiss="modal" type="button"><i class="fas fa-times mr-2"></i>Cerrar</button>';
+    }
+}
+
+function comprobarCodEliminarRazonamiento(i, j) {
+    if (httpRequest.status === 204) {
+        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-check-circle text-success h2 mr-2"></i> Razonamiento eliminado correctamente';
+        eliminarDivRazonamiento(i, j);
+    } else {
+        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-exclamation-triangle text-danger h2 mr-2"></i> Error en el servidor. Inténtelo de nuevo más tarde.';
+    }
+    document.querySelector(".modal-footer").innerHTML = '<button class="btn btn-secondary" data-dismiss="modal" type="button"><i class="fas fa-times mr-2"></i>Cerrar</button>';
+}
+
+function eliminarDivRazonamiento(i, j) {
     var divRazonamiento = document.querySelector("#razonamiento" + j + "Solucion" + i);
     if (divRazonamiento !== null) {
         eliminar(divRazonamiento.nextSibling);

@@ -758,3 +758,56 @@ $app->delete(
         }
     }
 )->setName('tdw_delete_soluciones');
+
+
+/** Eliminar un razonamiento dado su id */
+
+$app->delete(
+    $_ENV['RUTA_API'] . '/razonamientos/{id:[0-9]+}',
+    function (Request $request, Response $response, $args): Response {
+
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se requieren permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Razonamiento $razonamiento */
+            $razonamiento = $entityManager
+                ->getRepository(\TDW18\Usuarios\Entity\Razonamiento::class)
+                ->findOneBy(['id' => $args['id']]);
+
+            if ($razonamiento === null) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'No existe ese razonamiento'
+                    ],
+                    404
+                );
+            } else {
+                $entityManager->remove($razonamiento);
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 204]
+                );
+                return $response->withStatus(204);
+            }
+        }
+    }
+)->setName('tdw_delete_razonamientos');
