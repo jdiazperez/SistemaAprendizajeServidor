@@ -811,3 +811,170 @@ $app->delete(
         }
     }
 )->setName('tdw_delete_razonamientos');
+
+
+/** Actualizar Cuestion */
+
+$app->put(
+    $_ENV['RUTA_API'] . '/cuestiones/{id:[0-9]+}',
+    function (Request $request, Response $response, array $args): Response {
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se necesitan permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+            $req_data = $request->getParsedBody();
+
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Cuestion $cuestion */
+            $cuestion = $entityManager
+                ->find(\TDW18\Usuarios\Entity\Cuestion::class, $args['id']);
+
+            if ($cuestion === null) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'Error'
+                    ],
+                    404
+                );
+            } else {
+                $cuestion->setEnunciado($req_data['enunciado']);
+                $cuestion->setDisponible($req_data['disponible']);
+
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 201]
+                );
+                return $response->withStatus(201);
+            }
+        }
+    }
+)->setName('tdw_put_cuestiones');
+
+/** Actualizar Solucion */
+
+$app->put(
+    $_ENV['RUTA_API'] . '/soluciones/{id:[0-9]+}',
+    function (Request $request, Response $response, array $args): Response {
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se necesitan permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+            $req_data = $request->getParsedBody();
+
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Solucion $solucion */
+            $solucion = $entityManager
+                ->find(\TDW18\Usuarios\Entity\Solucion::class, $args['id']);
+
+            if ($solucion === null) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'Error'
+                    ],
+                    404
+                );
+            } else {
+                $solucion->setRespuesta($req_data['respuesta']);
+                $solucion->setCorrecta($req_data['correcta']);
+                $solucion->setPropuestaPorAlumno($req_data['propuestaPorAlumno']);
+
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 201]
+                );
+                return $response->withStatus(201);
+            }
+        }
+    }
+)->setName('tdw_put_soluciones');
+
+/**
+ * Crear una Solución
+ */
+
+$app->post($_ENV['RUTA_API'] . '/soluciones',
+    function (Request $request, Response $response): Response {
+
+        $req_data = $request->getParsedBody();
+
+        if (!isset($req_data['respuesta'], $req_data['correcta'],
+            $req_data['propuestaPorAlumno'], $req_data['idCuestion'], $req_data['idUsuario'])) {
+
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 422]
+            );
+
+            return $response
+                ->withJson(
+                    [
+                        'code' => 422,
+                        'message' => 'Faltan datos de la solución'
+                    ],
+                    422
+                );
+        }
+
+        $entityManager = getEntityManager();
+
+        /** @var \TDW18\Usuarios\Entity\Cuestion $idCuestion */
+        $idCuestion = $entityManager->find(\TDW18\Usuarios\Entity\Cuestion::class, $req_data['idCuestion']);
+
+        /** @var \TDW18\Usuarios\Entity\Usuario $idUsuario */
+        $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $req_data['idUsuario']);
+
+        $solucion = new \TDW18\Usuarios\Entity\Solucion(
+            $req_data['respuesta'],
+            $req_data['correcta'],
+            $req_data['propuestaPorAlumno'],
+            $idCuestion,
+            $idUsuario
+        );
+
+        $entityManager->persist($solucion);
+        $entityManager->flush();
+
+        $this->logger->info(
+            $request->getMethod() . ' ' . $request->getUri()->getPath(),
+            ['uid' => $this->jwt->user_id, 'status' => 201]
+        );
+
+        return $response->withStatus(201);
+    }
+)->setName('tdw_post_soluciones');

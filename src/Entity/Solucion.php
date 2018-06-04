@@ -42,6 +42,8 @@ class Solucion implements \JsonSerializable
      */
     private $propuestaPorAlumno;
 
+
+    //@var \Cuestion
     /**
      * @var \Cuestion
      *
@@ -51,7 +53,7 @@ class Solucion implements \JsonSerializable
      * })
      */
     private $idCuestion;
-
+//@var \Usuario
     /**
      * @var \Usuario
      *
@@ -78,6 +80,7 @@ class Solucion implements \JsonSerializable
         $this->idCuestion = $idCuestion;
         $this->idUsuario = $idUsuario;
     }
+
 
     /**
      * @return int
@@ -142,7 +145,6 @@ class Solucion implements \JsonSerializable
     {
         return $this->idCuestion;
     }
-
 
     /**
      * @return Usuario
