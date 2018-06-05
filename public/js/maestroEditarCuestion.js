@@ -32,24 +32,15 @@ function mostrarCuestion() {
     if (cuestion !== null) {
         idCuestion = cuestion.id;
         idUsuario = cuestion.idUsuario;
-        /*        numSoluciones = cuestion.soluciones.length;
-
-                for (var i = 0; i < numSoluciones; i++) {
-                    if (cuestion.soluciones[i].hasOwnProperty("razonamientos")) {
-                        numRazonamientos[i] = cuestion.soluciones[i].razonamientos.length;
-                    } else {
-                        numRazonamientos[i] = 0;
-                    }
-                }*/
         getSoluciones();
         containerEnunciado.querySelector("#enunciado").value = cuestion.enunciado;
         if (cuestion.disponible) {
             containerEnunciado.querySelector("#disponible").checked = true;
         }
-        //rellenarCampos(containerEnunciado);
 
     } else {
-        alert("Nueva cuestion");
+        idCuestion = 0;
+        idUsuario = usuarioIdentificado.usuario.id;
     }
 }
 
@@ -592,13 +583,29 @@ function guardar() {
 
     guardarCuestion(cuestion);
 
-    guardarSoluciones(cuestion);
-
     esperarFinRequests();
 }
 
 function guardarCuestion(cuestion) {
+    console.log("guardarCuestion: " + cuestion.id);
     if (cuestion.id == 0) {
+        $.ajax({
+            type: 'POST',
+            url: "/api/t/cuestiones",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(cuestion),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+            },
+            complete: function (xhr) {
+                cuestion.id = xhr.responseJSON.idCuestion;
+                guardarSoluciones(cuestion);
+                if (xhr.status != 201) {
+                    error = true;
+                }
+            }
+        });
 
     } else {
         $.ajax({
@@ -611,6 +618,7 @@ function guardarCuestion(cuestion) {
                 xhr.setRequestHeader("X-Token", usuarioIdentificado.jwt);
             },
             complete: function (xhr) {
+                guardarSoluciones(cuestion);
                 if (xhr.status != 201) {
                     error = true;
                 }
@@ -621,7 +629,7 @@ function guardarCuestion(cuestion) {
 
 function guardarSoluciones(cuestion) {
     var i = 1;
-    var numSolucionesGuardadas = 0;
+    var numSolucionesGuardadas = 0;    
 
     while (numSolucionesGuardadas < numSoluciones) {
         var containerSolucion = document.querySelector("#solucion" + i);
@@ -629,24 +637,22 @@ function guardarSoluciones(cuestion) {
             var solucion = {};
             solucion.id = Number(containerSolucion.getAttribute("data-id"));
             solucion.respuesta = document.querySelector("#textSolucion" + i).value;
+            
             if (containerSolucion.classList.contains("propuestaPorAlumno")) {
                 solucion.propuestaPorAlumno = true;
                 solucion.correcta = false;
 
-                guardarSolucion(solucion, cuestion);
+                guardarSolucion(solucion, cuestion, i);
             } else {
                 solucion.propuestaPorAlumno = false;
                 if (document.querySelector("#correcta" + i).checked) {
                     solucion.correcta = true;
 
-                    guardarSolucion(solucion, cuestion);
+                    guardarSolucion(solucion, cuestion, i);
                 } else {
                     solucion.correcta = false;
 
-                    guardarSolucion(solucion, cuestion);
-
-                    guardarRazonamientos(solucion, i);
-
+                    guardarSolucion(solucion, cuestion, i);
                 }
             }
             numSolucionesGuardadas++;
@@ -655,7 +661,8 @@ function guardarSoluciones(cuestion) {
     }
 }
 
-function guardarSolucion(solucion, cuestion) {
+function guardarSolucion(solucion, cuestion, i) {
+
     if (solucion.id == 0) {
         solucion.idUsuario = usuarioIdentificado.usuario.id;
         solucion.idCuestion = cuestion.id;
@@ -671,6 +678,7 @@ function guardarSolucion(solucion, cuestion) {
             },
             complete: function (xhr) {
                 solucion.id = xhr.responseJSON.idSolucion;
+                guardarRazonamientos(solucion, i);
                 if (xhr.status != 201) {
                     error = true;
                 }
@@ -688,12 +696,14 @@ function guardarSolucion(solucion, cuestion) {
                 xhr.setRequestHeader("X-Token", usuarioIdentificado.jwt);
             },
             complete: function (xhr) {
+                guardarRazonamientos(solucion, i);
                 if (xhr.status != 201) {
                     error = true;
                 }
             }
         });
     }
+
 }
 
 function mostrarModalGuardar() {
@@ -760,7 +770,7 @@ function guardarRazonamiento(razonamiento, solucion) {
     if (razonamiento.id == 0) {
         razonamiento.idUsuario = usuarioIdentificado.usuario.id;
         razonamiento.idSolucion = solucion.id;
-        
+
         console.log("guardarRazonamiento, idSolucion: " + razonamiento.idSolucion);
 
         $.ajax({
