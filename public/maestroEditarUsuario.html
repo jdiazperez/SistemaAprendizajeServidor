@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta name="description" content="aprendizaje">
+    <meta name="keywords" content="aprendizaje">
+    <meta name="author" content="Jorge">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Sistema de Aprendizaje</title>
+</head>
+
+<body onload="actualizarUsuarioIdentificado(); mostrarUsuario();">
+
+    <header>
+        <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
+            <div class="container">
+                <span class="navbar-brand h1">Sistema de Aprendizaje</span>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" id="usuarioIdentificado"></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <section>
+        <div class="container bg-light py-5 px-4">
+            <div class="row justify-content-center">
+                <h1 class="text-center">Editar Usuario</h1>
+            </div>
+            <form id="formUsuario" onsubmit="return actualizarUsuario()">
+                <div class="form-group mt-3">
+                    <label for="nombreUsuario">Nombre de Usuario</label>
+                    <input type="text" id="nombreUsuario" name="nombreUsuario" class="form-control form-control-sm" required>
+                </div>
+
+                <fieldset class="form-group">
+                    <legend>Rol del usuario</legend>
+                    <div class="form-check">
+                        <label for="maestro" class="form-check-label">
+                      <input type="radio" id="maestro" name="rol" class="form-check-input" value="1" required>
+                      Maestro
+                  </label>
+                    </div>
+                    <div class="form-check">
+                        <label for="aprendiz" class="form-check-label">
+                      <input type="radio" id="aprendiz" name="rol" class="form-check-input" value="0" required>
+                      Aprendiz
+                  </label>
+                    </div>
+                </fieldset>
+
+                <div class="form-check">
+                    <label class="form-check-label">
+                <input type="checkbox" id="activo" class="form-check-input">
+                    Activo (Puede acceder al sistema)
+                </label>
+                </div>
+
+                <div class="form-group mt-2">
+                    <label for="correo">Email</label>
+                    <input type="email" id="correo" name="correo" class="form-control form-control-sm" required>
+                </div>
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control form-control-sm" pattern="([A-zÀ-ž\s]){2,}" title="Los apellidos solo pueden contener caracteres alfabéticos y espacios" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" name="apellidos" class="form-control form-control-sm" pattern="([A-zÀ-ž\s]){2,}" title="Los apellidos solo pueden contener caracteres alfabéticos y espacios" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" class="form-control form-control-sm" pattern="[0-9]{9}" title="El número de teléfono debe tener 9 caracteres numéricos" required>
+                </div>
+                <a class="btn btn-lg btn-danger mt-3 mr-3" href="maestroGestionUsuarios.html">Cancelar</a>
+                <input type="submit" class="btn btn-lg btn-success mt-3" value="Actualizar Usuario">
+
+            </form>
+
+        </div>
+    </section>
+    <section>
+        <div class="modal" id="modalUsuario">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Actualizar Usuario</h5>
+                    </div>
+                    <div class="modal-body">Actualizando...</div>
+                    <div class="modal-footer">                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/bootstrap/jquery-3.3.1.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
+    <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
+    <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
+    <script src="js/maestroEditarUsuario.js" charset="UTF-8"></script>
+
+</body>
+
+</html>

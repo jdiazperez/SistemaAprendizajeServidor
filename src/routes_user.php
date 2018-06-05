@@ -686,3 +686,65 @@ $app->delete(
         }
     }
 )->setName('tdw_delete_usuarios');
+
+/** Actualizar Usuario */
+
+$app->put(
+    $_ENV['RUTA_API'] . '/maestro/usuarios/{id:[0-9]+}',
+    function (Request $request, Response $response, array $args): Response {
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se necesitan permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+
+            $req_data = $request->getParsedBody();
+
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Usuario $usuario */
+            $usuario = $entityManager
+                ->find(\TDW18\Usuarios\Entity\Usuario::class, $args['id']);
+
+            if ($usuario === null) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'Error'
+                    ],
+                    404
+                );
+            } else {
+                $usuario->setNombreUsuario($req_data['nombreUsuario']);
+                $usuario->setMaestro($req_data['maestro']);
+                $usuario->setActivo($req_data['activo']);
+                $usuario->setNombre($req_data['nombre']);
+                $usuario->setApellidos($req_data['apellidos']);
+                $usuario->setCorreo($req_data['correo']);
+                $usuario->setTelefono($req_data['telefono']);
+
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 201]
+                );
+                return $response->withStatus(201);
+            }
+
+        }
+    }
+)->setName('tdw_put_maestro_usuarios');
