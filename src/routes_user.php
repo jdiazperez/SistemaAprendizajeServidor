@@ -975,6 +975,122 @@ $app->post($_ENV['RUTA_API'] . '/soluciones',
             ['uid' => $this->jwt->user_id, 'status' => 201]
         );
 
-        return $response->withStatus(201);
+        return $response->withJson(['idSolucion' => $solucion->getId()])->withStatus(201);
     }
 )->setName('tdw_post_soluciones');
+
+/** Actualizar Razonamiento */
+
+$app->put(
+    $_ENV['RUTA_API'] . '/razonamientos/{id:[0-9]+}',
+    function (Request $request, Response $response, array $args): Response {
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se necesitan permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+            $req_data = $request->getParsedBody();
+
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Razonamiento $razonamiento */
+            $razonamiento = $entityManager
+                ->find(\TDW18\Usuarios\Entity\Razonamiento::class, $args['id']);
+
+            if ($razonamiento === null) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'Error'
+                    ],
+                    404
+                );
+            } else {
+                $razonamiento->setTexto($req_data['texto']);
+                $razonamiento->setJustificado($req_data['justificado']);
+                $razonamiento->setError($req_data['error']);
+                $razonamiento->setPropuestoPorAlumno($req_data['propuestoPorAlumno']);
+
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 201]
+                );
+                return $response->withStatus(201);
+            }
+        }
+    }
+)->setName('tdw_put_razonamientos');
+
+/**
+ * Crear un Razonamiento
+ */
+
+$app->post($_ENV['RUTA_API'] . '/razonamientos',
+    function (Request $request, Response $response): Response {
+
+        $req_data = $request->getParsedBody();
+
+        if (!isset($req_data['texto'], $req_data['justificado'],
+            $req_data['error'], $req_data['propuestoPorAlumno'],
+            $req_data['idSolucion'], $req_data['idUsuario'])) {
+
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 422]
+            );
+
+            return $response
+                ->withJson(
+                    [
+                        'code' => 422,
+                        'message' => 'Faltan datos del razonamiento'
+                    ],
+                    422
+                );
+        }
+
+        $entityManager = getEntityManager();
+
+        $this->logger->addInfo('idSolucion: ' . $req_data['idSolucion']);
+
+        /** @var \TDW18\Usuarios\Entity\Solucion $idSolucion */
+        $idSolucion = $entityManager->find(\TDW18\Usuarios\Entity\Solucion::class, $req_data['idSolucion']);
+
+        /** @var \TDW18\Usuarios\Entity\Usuario $idUsuario */
+        $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $req_data['idUsuario']);
+
+        $razonamiento = new \TDW18\Usuarios\Entity\Razonamiento(
+            $req_data['texto'],
+            $req_data['justificado'],
+            $req_data['error'],
+            $req_data['propuestoPorAlumno'],
+            $idSolucion,
+            $idUsuario
+        );
+
+        $entityManager->persist($razonamiento);
+        $entityManager->flush();
+
+        $this->logger->info(
+            $request->getMethod() . ' ' . $request->getUri()->getPath(),
+            ['uid' => $this->jwt->user_id, 'status' => 201]
+        );
+
+        return $response->withStatus(201);
+    }
+)->setName('tdw_post_razonamientos');

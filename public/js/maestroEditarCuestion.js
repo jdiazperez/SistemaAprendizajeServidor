@@ -102,7 +102,7 @@ function comprobarCodGetRazonamientos(request, i) {
 
 function rellenarSolucion(solucion, i) {
     var containerSolucion = crearContainerSolucion(solucion.propuestaPorAlumno, solucion.respuesta, i);
-    containerSolucion.setAttribute("data-id", solucion.id);    
+    containerSolucion.setAttribute("data-id", solucion.id);
     sectionCuestion.appendChild(containerSolucion);
 
     if (solucion.propuestaPorAlumno) {
@@ -177,7 +177,7 @@ function rellenarRazonamiento(razonamiento, i, j) {
     var containerSolucion = document.querySelector("#solucion" + i);
     var divOpciones = document.querySelector("#opciones" + i);
     var divRazonamiento = crearDivRazonamiento(razonamiento.propuestoPorAlumno, razonamiento.texto, i, j);
-    divRazonamiento.setAttribute("data-id", razonamiento.id);    
+    divRazonamiento.setAttribute("data-id", razonamiento.id);
 
     if (razonamiento.propuestoPorAlumno) {
         var divOpcionesRazonamiento = document.createElement("div");
@@ -310,7 +310,7 @@ function nuevaSolucion() {
     numSoluciones++;
 
     containerSolucion = crearContainerSolucion(false, "", idSolucion);
-    containerSolucion.setAttribute("data-id", "0");    
+    containerSolucion.setAttribute("data-id", "0");
 
     divEliminarSolucion = crearDivEliminarSolucion(idSolucion);
     containerSolucion.appendChild(document.createElement("hr"));
@@ -385,7 +385,7 @@ function corregirSolucion(i) {
     var anteriorContainerSolucion = document.querySelector("#solucion" + i);
 
     var nuevoContainerSolucion = crearContainerSolucion(false, solucion.respuesta, i);
-    nuevoContainerSolucion.setAttribute("data-id", anteriorContainerSolucion.getAttribute("data-id"));    
+    nuevoContainerSolucion.setAttribute("data-id", anteriorContainerSolucion.getAttribute("data-id"));
     var divOpcionesSolucion;
 
     if (document.querySelector("#correcta" + i).checked == true) {
@@ -425,7 +425,7 @@ function añadirRazonamiento(i) {
     numRazonamientos[i - 1]++;
 
     divRazonamiento = crearDivRazonamiento(false, "", i, idRazonamiento);
-    divRazonamiento.setAttribute("data-id", "0");    
+    divRazonamiento.setAttribute("data-id", "0");
 
     divEliminarRazonamiento = crearDivEliminarRazonamiento(i, numRazonamientos[i - 1]);
     divRazonamiento.appendChild(divEliminarRazonamiento);
@@ -450,7 +450,7 @@ function corregirRazonamiento(i, j) {
 
     var nuevoDivRazonamiento = crearDivRazonamiento(false, razonamiento.texto, i, j);
     nuevoDivRazonamiento.setAttribute("data-id", anteriorDivRazonamiento.getAttribute("data-id"));
-    
+
     if (document.querySelector("#justificado" + j + "Solucion" + i).checked == true) {
         razonamiento.justificado = true;
     } else {
@@ -582,8 +582,9 @@ function marcarRazonamientoJustificado(i, j) {
 var error = false;
 
 function guardar() {
-    var cuestion = {};
+    mostrarModalGuardar();
 
+    var cuestion = {};
     cuestion.id = Number(idCuestion);
     cuestion.enunciado = document.querySelector("#enunciado").value;
     cuestion.disponible = document.querySelector("#disponible").checked;
@@ -591,75 +592,9 @@ function guardar() {
 
     guardarCuestion(cuestion);
 
-    var i = 1;
-    var numSolucionesGuardadas = 0;
+    guardarSoluciones(cuestion);
 
-    while (numSolucionesGuardadas < numSoluciones) {
-        var containerSolucion = document.querySelector("#solucion" + i);
-        if (containerSolucion !== null) {
-            var solucion = {};
-            solucion.id = Number(containerSolucion.getAttribute("data-id"));
-            solucion.respuesta = document.querySelector("#textSolucion" + i).value;
-            if (containerSolucion.classList.contains("propuestaPorAlumno")) {
-                solucion.propuestaPorAlumno = true;
-                solucion.correcta = false;
-
-                guardarSolucion(solucion);
-            } else {
-                solucion.propuestaPorAlumno = false;
-                if (document.querySelector("#correcta" + i).checked) {
-                    solucion.correcta = true;
-
-                    guardarSolucion(solucion);
-                } else {
-                    solucion.correcta = false;
-
-                    guardarSolucion(solucion);
-
-                    /*                    var j = 1;
-                                        var numRazonamientosGuardados = 0;
-
-                                        while (numRazonamientosGuardados < numRazonamientos[i - 1]) {
-                                            var divRazonamiento = document.querySelector("#razonamiento" + j + "Solucion" + i);
-                                            if (divRazonamiento !== null) {
-
-                                                var razonamiento = {};
-                                                razonamiento.id = Number(divRazonamiento.getAttribute("data-id"));
-                                                razonamiento.texto = document.querySelector("#textoRazonamiento" + j + "Solucion" + i).value;
-                                                razonamiento.idUsuario = Number(divRazonamiento.getAttribute("data-idusuario"));
-                                                razonamiento.idSolucion = solucion.id;
-
-                                                if (divRazonamiento.classList.contains("propuestoPorAlumno")) {
-                                                    razonamiento.propuestoPorAlumno = true;
-                                                    razonamiento.justificado = false;
-                                                    razonamiento.error = "";
-
-                                                    guardarRazonamiento(razonamiento);
-                                                } else {
-                                                    razonamiento.propuestoPorAlumno = false;
-                                                    if (document.querySelector("#justificado" + j + "Solucion" + i).checked) {
-                                                        razonamiento.justificado = true;
-                                                        razonamiento.error = "";
-
-                                                        guardarRazonamiento(razonamiento);
-                                                    } else {
-                                                        razonamiento.justificado = false;
-                                                        razonamiento.error = document.querySelector("#textoError" + j + "Solucion" + i).value;
-
-                                                        guardarRazonamiento(razonamiento);
-                                                    }
-                                                }
-                                                numRazonamientosGuardados++;
-                                            }
-                                            j++;
-                                        }*/
-                }
-            }
-            numSolucionesGuardadas++;
-        }
-        i++;
-    }
-    mostrarModalGuardar();
+    esperarFinRequests();
 }
 
 function guardarCuestion(cuestion) {
@@ -684,13 +619,47 @@ function guardarCuestion(cuestion) {
     }
 }
 
-function guardarSolucion(solucion) {
+function guardarSoluciones(cuestion) {
+    var i = 1;
+    var numSolucionesGuardadas = 0;
+
+    while (numSolucionesGuardadas < numSoluciones) {
+        var containerSolucion = document.querySelector("#solucion" + i);
+        if (containerSolucion !== null) {
+            var solucion = {};
+            solucion.id = Number(containerSolucion.getAttribute("data-id"));
+            solucion.respuesta = document.querySelector("#textSolucion" + i).value;
+            if (containerSolucion.classList.contains("propuestaPorAlumno")) {
+                solucion.propuestaPorAlumno = true;
+                solucion.correcta = false;
+
+                guardarSolucion(solucion, cuestion);
+            } else {
+                solucion.propuestaPorAlumno = false;
+                if (document.querySelector("#correcta" + i).checked) {
+                    solucion.correcta = true;
+
+                    guardarSolucion(solucion, cuestion);
+                } else {
+                    solucion.correcta = false;
+
+                    guardarSolucion(solucion, cuestion);
+
+                    guardarRazonamientos(solucion, i);
+
+                }
+            }
+            numSolucionesGuardadas++;
+        }
+        i++;
+    }
+}
+
+function guardarSolucion(solucion, cuestion) {
     if (solucion.id == 0) {
         solucion.idUsuario = usuarioIdentificado.usuario.id;
         solucion.idCuestion = cuestion.id;
-        console.log("Solucion Nueva:");
-        console.log(solucion);
-        console.log(JSON.stringify(solucion));
+
         $.ajax({
             type: 'POST',
             url: "/api/t/soluciones",
@@ -701,6 +670,7 @@ function guardarSolucion(solucion) {
                 xhr.setRequestHeader("X-Token", usuarioIdentificado.jwt);
             },
             complete: function (xhr) {
+                solucion.id = xhr.responseJSON.idSolucion;
                 if (xhr.status != 201) {
                     error = true;
                 }
@@ -736,14 +706,97 @@ function mostrarModalGuardar() {
     });
 }
 
-$(document).ajaxStop(function () {
-    if (!error) {
-        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-check-circle text-success h2 mr-2"></i> Cuestión guardada correctamente';
-    } else {
-        document.querySelector(".modal-body").innerHTML = '<i class="fas fa-exclamation-triangle text-danger h2 mr-2"></i> Error en el servidor. Inténtelo de nuevo más tarde.';
+function esperarFinRequests() {
+    $(document).ajaxStop(function () {
+        if (!error) {
+            document.querySelector(".modal-body").innerHTML = '<i class="fas fa-check-circle text-success h2 mr-2"></i> Cuestión guardada correctamente';
+        } else {
+            document.querySelector(".modal-body").innerHTML = '<i class="fas fa-exclamation-triangle text-danger h2 mr-2"></i> Error en el servidor. Inténtelo de nuevo más tarde.';
+        }
+        document.querySelector(".modal-footer").innerHTML = '<a class="btn btn-secondary" href="/maestroGestionCuestiones"><i class="fas fa-times mr-2"></i>Cerrar</a>';
+    });
+}
+
+function guardarRazonamientos(solucion, i) {
+    var j = 1;
+    var numRazonamientosGuardados = 0;
+
+    while (numRazonamientosGuardados < numRazonamientos[i - 1]) {
+        var divRazonamiento = document.querySelector("#razonamiento" + j + "Solucion" + i);
+        if (divRazonamiento !== null) {
+
+            var razonamiento = {};
+            razonamiento.id = Number(divRazonamiento.getAttribute("data-id"));
+            razonamiento.texto = document.querySelector("#textoRazonamiento" + j + "Solucion" + i).value;
+            razonamiento.idSolucion = solucion.id;
+
+            if (divRazonamiento.classList.contains("propuestoPorAlumno")) {
+                razonamiento.propuestoPorAlumno = true;
+                razonamiento.justificado = false;
+                razonamiento.error = "";
+
+                guardarRazonamiento(razonamiento, solucion);
+            } else {
+                razonamiento.propuestoPorAlumno = false;
+                if (document.querySelector("#justificado" + j + "Solucion" + i).checked) {
+                    razonamiento.justificado = true;
+                    razonamiento.error = "";
+
+                    guardarRazonamiento(razonamiento, solucion);
+                } else {
+                    razonamiento.justificado = false;
+                    razonamiento.error = document.querySelector("#textoError" + j + "Solucion" + i).value;
+
+                    guardarRazonamiento(razonamiento, solucion);
+                }
+            }
+            numRazonamientosGuardados++;
+        }
+        j++;
     }
-    document.querySelector(".modal-footer").innerHTML = '<a class="btn btn-secondary" href="/maestroGestionCuestiones"><i class="fas fa-times mr-2"></i>Cerrar</a>';
-});
+}
+
+function guardarRazonamiento(razonamiento, solucion) {
+    if (razonamiento.id == 0) {
+        razonamiento.idUsuario = usuarioIdentificado.usuario.id;
+        razonamiento.idSolucion = solucion.id;
+        
+        console.log("guardarRazonamiento, idSolucion: " + razonamiento.idSolucion);
+
+        $.ajax({
+            type: 'POST',
+            url: "/api/t/razonamientos",
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(razonamiento),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+            },
+            complete: function (xhr) {
+                if (xhr.status != 201) {
+                    error = true;
+                }
+            }
+        });
+
+    } else {
+        $.ajax({
+            type: 'PUT',
+            url: "/api/t/razonamientos/" + razonamiento.id,
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            data: JSON.stringify(razonamiento),
+            beforeSend: function (xhr) {
+                xhr.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+            },
+            complete: function (xhr) {
+                if (xhr.status != 201) {
+                    error = true;
+                }
+            }
+        });
+    }
+}
 
 function crearDropItemNuevaPropuesta(esSolucion, i, j) {
     var dropdown = document.querySelector("#dropdownNuevasPropuestas");
