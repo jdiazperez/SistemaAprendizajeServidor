@@ -2,16 +2,18 @@ var usuarioIdentificado = JSON.parse(localStorage.getItem("usuarioIdentificado")
 var idCuestion;
 var cuestion;
 var sectionCuestion;
+var soluciones;
+var razonamientos = [];
 
 function mostrarCuestion() {
     cuestion = JSON.parse(localStorage.getItem("responderCuestion"));
     idCuestion = cuestion.id;
-    console.log(cuestion);
-
+    
     sectionCuestion = document.querySelector("#sectionCuestion");
 
     añadirEnunciado();
     añadirPropuestaSolucion();
+    getSoluciones();
     //añadirSoluciones(cuestion.soluciones);
 }
 
@@ -74,6 +76,57 @@ function enviarPropuestaSolucion() {
     return false;
 }
 
+function getSoluciones() {
+    httpRequest = new XMLHttpRequest();
+    httpRequest.open("GET", "/api/t/soluciones/" + idCuestion, true);
+    httpRequest.responseType = "json";
+    httpRequest.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+    httpRequest.onload = comprobarCodGetSoluciones;
+    httpRequest.send();
+}
+
+function comprobarCodGetSoluciones() {
+    if (httpRequest.status === 200) {
+        soluciones = httpRequest.response;
+        añadirSoluciones();
+        //numSoluciones = soluciones.length;
+        var requestRazonamientos = [];
+        for (var i = 0; i < soluciones.length; i++) {
+            if (!soluciones[i].correcta) {
+                requestRazonamientos[i] = new XMLHttpRequest();
+                getRazonamientos(requestRazonamientos[i], i);
+            }
+            else{
+               razonamientos[i] = []; 
+            }
+        }
+    } else {
+        document.querySelector("#alertError").classList.remove("oculto");
+    }
+}
+
+function getRazonamientos(request, i) {
+    request.open("GET", "/api/t/razonamientos/" + soluciones[i].id, true);
+    request.responseType = "json";
+    request.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+    request.onload = function () {
+        comprobarCodGetRazonamientos(request, i);
+    };
+    request.send();
+}
+
+function comprobarCodGetRazonamientos(request, i) {
+    if (request.status === 200) {
+        razonamientos[i] = request.response;
+        añadirRazonamientos(i + 1);
+        console.log("añadirRazonamientos de la solucion: " + i);
+        //numRazonamientos[i] = razonamientos[i].length;
+
+    } else {        
+        document.querySelector("#alertError").classList.remove("oculto");
+    }
+}
+
 function guardarSolucion(solucion) {
     $.ajax({
         type: 'POST',
@@ -93,16 +146,16 @@ function guardarSolucion(solucion) {
     });
 }
 
-function añadirSoluciones(soluciones) {
+function añadirSoluciones() {
     var containerSolucion;
     var solucion;
     for (var i = 1; i <= soluciones.length; i++) {
         solucion = soluciones[i - 1];
         if (!solucion.propuestaPorAlumno) {
             containerSolucion = crearContainerSolucion(i, solucion.respuesta);
-            if (!solucion.correcta) {
+            /*if (!solucion.correcta) {
                 añadirRazonamientos(i, solucion, containerSolucion);
-            }
+            }*/
             sectionCuestion.appendChild(containerSolucion);
         }
     }
@@ -111,7 +164,8 @@ function añadirSoluciones(soluciones) {
 function crearContainerSolucion(i, respuesta) {
     var containerSolucion = document.createElement("div");
     containerSolucion.id = "solucion" + i;
-    containerSolucion.className = "container bg-light border p-4 mt-4 oculto";
+    //containerSolucion.className = "container bg-light border p-4 mt-4 oculto";
+    containerSolucion.className = "container bg-light border p-4 mt-4";
     containerSolucion.innerHTML =
         '<div class="form-group">' +
         '<label for="textoSolucion' + i + '"><h4 class="text-primary">Solución ' + i + '</h4></label>' +
@@ -165,12 +219,13 @@ function corregirSolucion(i) {
     }
 }
 
-function añadirRazonamientos(i, solucion, containerSolucion) {
+function añadirRazonamientos(i) {
+    var containerSolucion = document.querySelector("#solucion" + i);
     var divPropuestaRazonamiento = crearDivPropuestaRazonamiento(i);
     containerSolucion.appendChild(divPropuestaRazonamiento);
 
-    for (var j = 1; j <= solucion.razonamientos.length; j++) {
-        var razonamiento = solucion.razonamientos[j - 1];
+    for (var j = 1; j <= razonamientos[i-1].length; j++) {
+        var razonamiento = razonamientos[i-1][j - 1];
 
         if (!razonamiento.propuestoPorAlumno) {
             var divRazonamiento = crearDivRazonamiento(i, j, razonamiento.texto);
@@ -187,7 +242,8 @@ function añadirRazonamientos(i, solucion, containerSolucion) {
 function crearDivPropuestaRazonamiento(i) {
     var divPropuestaRazonamiento = document.createElement("div");
     divPropuestaRazonamiento.id = "propuestaRazonamiento" + i;
-    divPropuestaRazonamiento.className = "oculto";
+    //divPropuestaRazonamiento.className = "oculto";
+    
     divPropuestaRazonamiento.innerHTML =
         '<form id="formPropuestaRazonamiento' + i + '" onsubmit="return enviarPropuestaRazonamiento(' + i + ')">' +
         '<div class="form-group mt-5 ml-2">' +
@@ -233,7 +289,7 @@ function enviarPropuestaRazonamiento(i) {
 function crearDivRazonamiento(i, j, texto) {
     var divRazonamiento = document.createElement("div");
     divRazonamiento.id = "razonamiento" + j + "Solucion" + i;
-    divRazonamiento.className = "oculto";
+    //divRazonamiento.className = "oculto";
     divRazonamiento.innerHTML =
         '<div class="form-group mt-5 ml-2">' +
         '<label for="textoRazonamiento' + j + 'Solucion' + i + '"><h5 class="text-info">Razonamiento ' + j + '</h5></label>' +
@@ -293,7 +349,7 @@ function corregirRazonamiento(i, j) {
 
 function crearDivError(i, j, textoError) {
     var divError = document.createElement("div");
-    divError.classList = "ml-2 oculto";
+    //divError.classList = "ml-2 oculto";
     divError.id = "error" + j + "Solucion" + i;
     divError.innerHTML =
         '<div class="form-group mt-4 ml-2">' +
