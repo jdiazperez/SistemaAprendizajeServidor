@@ -1,17 +1,18 @@
-var datos;
+var usuarioIdentificado = JSON.parse(localStorage.getItem("usuarioIdentificado"));
 var idCuestion;
 var cuestion;
 var sectionCuestion;
 
 function mostrarCuestion() {
-    datos = JSON.parse(localStorage.getItem("datos"));
-    idCuestion = localStorage.getItem("responderCuestion");
-    cuestion = datos.cuestiones[idCuestion - 1];
+    cuestion = JSON.parse(localStorage.getItem("responderCuestion"));
+    idCuestion = cuestion.id;
+    console.log(cuestion);
+
     sectionCuestion = document.querySelector("#sectionCuestion");
 
     añadirEnunciado();
     añadirPropuestaSolucion();
-    añadirSoluciones(cuestion.soluciones);
+    //añadirSoluciones(cuestion.soluciones);
 }
 
 function añadirEnunciado() {
@@ -43,6 +44,9 @@ function añadirPropuestaSolucion() {
         '<div id="alertPropuestaSolucion" class="alert alert-info mt-3 ml-1 oculto">' +
         'Se ha enviado para su corrección manual' +
         '</div>' +
+        '<div id="alertErrorPropuestaSolucion" class="alert alert-danger mt-3 ml-1 oculto">' +
+        'No se ha podido guardar en el servidor' +
+        '</div>' +
         '</div>' +
         '</form>';
     sectionCuestion.appendChild(containerPropuestaSolucion);
@@ -58,18 +62,35 @@ function enviarPropuestaSolucion() {
     btn.disabled = true;
     texto.disabled = true;
 
-    solucion.id = cuestion.soluciones.length + 1;
     solucion.respuesta = texto.value;
+    solucion.correcta = false;
     solucion.propuestaPorAlumno = true;
+    solucion.idCuestion = idCuestion;
 
-    cuestion.soluciones.push(solucion);
-    datos.cuestiones[idCuestion - 1] = cuestion;
+    guardarSolucion(solucion);
 
-    localStorage.setItem("datos", JSON.stringify(datos));
-
-    mostrarSolucion(1);
+    //mostrarSolucion(1);
 
     return false;
+}
+
+function guardarSolucion(solucion) {
+    $.ajax({
+        type: 'POST',
+        url: "/api/t/soluciones",
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json',
+        data: JSON.stringify(solucion),
+        beforeSend: function (xhr) {
+            xhr.setRequestHeader("X-Token", usuarioIdentificado.jwt);
+        },
+        complete: function (xhr) {
+            if (xhr.status != 201) {
+                document.querySelector("#alertPropuestaSolucion").classList.add("oculto");
+                document.querySelector("#alertErrorPropuestaSolucion").classList.remove("oculto");
+            }
+        }
+    });
 }
 
 function añadirSoluciones(soluciones) {

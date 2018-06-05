@@ -15,7 +15,7 @@
     <title>Sistema de Aprendizaje</title>
 </head>
 
-<body onload="actualizarUsuarioIdentificado(); listarCuestiones();">
+<body onload="actualizarUsuarioIdentificado(); getCuestiones();">
 
     <header>
         <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
@@ -26,22 +26,36 @@
                         <a class="nav-link" id="usuarioIdentificado"></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">Cerrar Sesión</a>
+                        <a class="nav-link" href="login.html">Cerrar Sesión</a>
                     </li>
                 </ul>
             </div>
         </nav>
     </header>
 
-    <section>        
-        <div id="containerCuestiones" class="container mt-3"></div>
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <a class="btn btn-lg btn-info active" href="aprendizListarCuestiones.html"><i class="fas fa-pencil-alt mr-3"></i>Responder Cuestiones</a>
+
+                </div>
+                <div class="col-lg-3">
+                    <a class="btn btn-lg btn-info" href="#"><i class="fas fa-user mr-3"></i>Editar Perfil</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div id="containerCuestiones" class="container mt-5"></div>
     </section>
 
     <script src="js/bootstrap/jquery-3.3.1.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
-<!--    <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
-    <script src="js/listarCuestionesAprendiz.js" charset="UTF-8"></script>-->
+    <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
+    <script src="js/aprendizListarCuestiones.js" charset="UTF-8"></script>
 
 </body>
 

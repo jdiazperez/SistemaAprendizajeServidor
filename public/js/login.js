@@ -21,7 +21,7 @@ function comprobarCodLogin() {
             window.location.href = "/maestroGestionCuestiones.html";
         }
         else{
-            window.location.href = "/listarCuestionesAprendiz.html";
+            window.location.href = "/aprendizListarCuestiones.html";
         }
 
         
