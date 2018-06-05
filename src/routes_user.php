@@ -603,3 +603,86 @@ $app->post($_ENV['RUTA_API'] . '/cuestiones',
 
     }
 )->setName('tdw_post_cuestiones');
+
+/** Obtener Usuarios*/
+
+$app->get(
+    $_ENV['RUTA_API'] . '/usuarios',
+    function (Request $request, Response $response): Response {
+
+        $usuarios = getEntityManager()
+            ->getRepository(\TDW18\Usuarios\Entity\Usuario::class)
+            ->findAll();
+
+        if ($usuarios === null) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 404]
+            );
+            return $response->withJson([
+                'code' => 404,
+                'message' => 'Error al acceder a la base de datos'
+            ],
+                404);
+        } else {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 200]
+            );
+            return $response
+                ->withJson($usuarios, 200);
+        }
+    }
+)->setName('tdw_get_usuarios');
+
+/** Eliminar un Usuario dado su id */
+
+$app->delete(
+    $_ENV['RUTA_API'] . '/usuarios/{id:[0-9]+}',
+    function (Request $request, Response $response, $args): Response {
+
+        if (!$this->jwt->isMaestro) {
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 403]
+            );
+            return $response
+                ->withJson(
+                    [
+                        'code' => 403,
+                        'message' => 'Se requieren permisos de Maestro'
+                    ],
+                    403
+                );
+        } else {
+            $entityManager = getEntityManager();
+            /** @var \TDW18\Usuarios\Entity\Usuario $usuario */
+            $usuario = $entityManager
+                ->getRepository(\TDW18\Usuarios\Entity\Usuario::class)
+                ->findOneBy(['id' => $args['id']]);
+
+            if ($usuario === null) {
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 404]
+                );
+                return $response->withJson(
+                    [
+                        'code' => 404,
+                        'message' => 'No existe ese usuario'
+                    ],
+                    404
+                );
+            } else {
+                $entityManager->remove($usuario);
+                $entityManager->flush();
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 204]
+                );
+                return $response->withStatus(204);
+            }
+        }
+    }
+)->setName('tdw_delete_usuarios');

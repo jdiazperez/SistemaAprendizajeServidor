@@ -15,7 +15,7 @@
     <title>Sistema de Aprendizaje</title>
 </head>
 
-<body onload="actualizarUsuarioIdentificado(); getCuestiones();">
+<body onload="actualizarUsuarioIdentificado(); getUsuarios();">
 
     <header>
         <nav id="navbar" class="navbar navbar-expand-sm navbar-dark bg-primary fixed-top pt-3">
@@ -36,11 +36,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3">
-                    <a class="btn btn-lg btn-info active" href="maestroGestionCuestiones.html"><i class="fas fa-book mr-3"></i>Gestión de Cuestiones</a>
+                    <a class="btn btn-lg btn-info" href="maestroGestionCuestiones.html"><i class="fas fa-book mr-3"></i>Gestión de Cuestiones</a>
 
                 </div>
                 <div class="col-lg-3">
-                    <a class="btn btn-lg btn-info" href="maestroGestionUsuarios.html"><i class="fas fa-users mr-3"></i>Gestión de Usuarios</a>
+                    <a class="btn btn-lg btn-info active" href="maestroGestionUsuarios.html"><i class="fas fa-users mr-3"></i>Gestión de Usuarios</a>
                 </div>
             </div>
         </div>
@@ -49,31 +49,26 @@
         <div class="container mt-4">
             <div class="row">
                 <div class="col">
-                    <a class="btn btn-secondary" href="maestroEditarCuestion.html" onclick="nuevaCuestion()"><i class="far fa-file-alt fa-lg mr-3"></i>Nueva Cuestión</a>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
                     <div id="alertError" class="alert alert-danger mt-3 oculto"><i class="fas fa-times mr-2"></i>Error al acceder al servidor</div>
                 </div>
             </div>
         </div>
 
-        <div id="containerCuestiones" class="container mt-3"></div>
+        <div id="containerUsuarios" class="container mt-3"></div>
     </section>
 
     <section>
-        <div class="modal" id="modalEliminarCuestion">
+        <div class="modal" id="modalEliminarUsuario">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">Eliminar Cuestión</h5>
+                        <h5 class="modal-title">Eliminar Usuario</h5>
                     </div>
                     <div class="modal-body">
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times mr-2"></i>No</button>
-                        <button id="btnEliminarCuestion" class="btn btn-success"><i class="fas fa-check mr-2"></i>Si</button>
+                        <button id="btnEliminarUsuario" class="btn btn-success"><i class="fas fa-check mr-2"></i>Si</button>
                     </div>
                 </div>
             </div>
@@ -84,8 +79,8 @@
     <script src="js/bootstrap/popper.min.js" charset="UTF-8"></script>
     <script src="js/bootstrap/bootstrap.min.js" charset="UTF-8"></script>
     <script src="js/actualizarUsuarioIdentificado.js" charset="UTF-8"></script>
-    <script src="js/maestroListarCuestiones.js" charset="UTF-8"></script>
-
+    <script src="js/maestroListarUsuarios.js" charset="UTF-8"></script>
+    
 </body>
 
 </html>
