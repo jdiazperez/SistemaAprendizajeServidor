@@ -1,6 +1,5 @@
 var usuarioIdentificado = JSON.parse(localStorage.getItem("usuarioIdentificado"));
 var idCuestion;
-var idUsuario;
 var cuestion;
 var soluciones = [];
 var numSoluciones = 0;
@@ -30,8 +29,7 @@ function mostrarCuestion() {
     sectionCuestion.appendChild(containerEnunciado);
 
     if (cuestion !== null) {
-        idCuestion = cuestion.id;
-        idUsuario = cuestion.idUsuario;
+        idCuestion = cuestion.id;        
         getSoluciones();
         containerEnunciado.querySelector("#enunciado").value = cuestion.enunciado;
         if (cuestion.disponible) {
@@ -40,7 +38,6 @@ function mostrarCuestion() {
 
     } else {
         idCuestion = 0;
-        idUsuario = usuarioIdentificado.usuario.id;
     }
 }
 
@@ -579,11 +576,12 @@ function guardar() {
     cuestion.id = Number(idCuestion);
     cuestion.enunciado = document.querySelector("#enunciado").value;
     cuestion.disponible = document.querySelector("#disponible").checked;
-    cuestion.idUsuario = Number(idUsuario);
 
     guardarCuestion(cuestion);
 
     esperarFinRequests();
+    
+    return false;
 }
 
 function guardarCuestion(cuestion) {
@@ -664,7 +662,6 @@ function guardarSoluciones(cuestion) {
 function guardarSolucion(solucion, cuestion, i) {
 
     if (solucion.id == 0) {
-        solucion.idUsuario = usuarioIdentificado.usuario.id;
         solucion.idCuestion = cuestion.id;
 
         $.ajax({
@@ -767,11 +764,8 @@ function guardarRazonamientos(solucion, i) {
 }
 
 function guardarRazonamiento(razonamiento, solucion) {
-    if (razonamiento.id == 0) {
-        razonamiento.idUsuario = usuarioIdentificado.usuario.id;
+    if (razonamiento.id == 0) {        
         razonamiento.idSolucion = solucion.id;
-
-        console.log("guardarRazonamiento, idSolucion: " + razonamiento.idSolucion);
 
         $.ajax({
             type: 'POST',

@@ -933,11 +933,8 @@ $app->post($_ENV['RUTA_API'] . '/soluciones',
 
         $req_data = $request->getParsedBody();
 
-        $this->logger->addInfo('POST SOLUCION: idUsuario: ' . $req_data['idUsuario']);
-        $this->logger->addInfo('POST SOLUCION: idCuestion: ' . $req_data['idCuestion']);
-
         if (!isset($req_data['respuesta'], $req_data['correcta'],
-            $req_data['propuestaPorAlumno'], $req_data['idCuestion'], $req_data['idUsuario'])) {
+            $req_data['propuestaPorAlumno'], $req_data['idCuestion'])) {
 
             $this->logger->info(
                 $request->getMethod() . ' ' . $request->getUri()->getPath(),
@@ -960,7 +957,7 @@ $app->post($_ENV['RUTA_API'] . '/soluciones',
         $idCuestion = $entityManager->find(\TDW18\Usuarios\Entity\Cuestion::class, $req_data['idCuestion']);
 
         /** @var \TDW18\Usuarios\Entity\Usuario $idUsuario */
-        $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $req_data['idUsuario']);
+        $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $this->jwt->user_id);
 
         $solucion = new \TDW18\Usuarios\Entity\Solucion(
             $req_data['respuesta'],
@@ -977,8 +974,6 @@ $app->post($_ENV['RUTA_API'] . '/soluciones',
             $request->getMethod() . ' ' . $request->getUri()->getPath(),
             ['uid' => $this->jwt->user_id, 'status' => 201]
         );
-
-        $this->logger->addInfo('POST SOLUCION: idSolucion: ' . $solucion->getId());
 
         return $response->withJson(['idSolucion' => $solucion->getId()])->withStatus(201);
     }
@@ -1050,12 +1045,9 @@ $app->post($_ENV['RUTA_API'] . '/razonamientos',
 
         $req_data = $request->getParsedBody();
 
-        $this->logger->addInfo('POST RAZONAMIENTO: idUsuario: ' . $req_data['idUsuario']);
-        $this->logger->addInfo('POST RAZONAMIENTO: idSolucion: ' . $req_data['idSolucion']);
-
         if (!isset($req_data['texto'], $req_data['justificado'],
             $req_data['error'], $req_data['propuestoPorAlumno'],
-            $req_data['idSolucion'], $req_data['idUsuario'])) {
+            $req_data['idSolucion'])) {
 
             $this->logger->info(
                 $request->getMethod() . ' ' . $request->getUri()->getPath(),
@@ -1078,7 +1070,7 @@ $app->post($_ENV['RUTA_API'] . '/razonamientos',
         $idSolucion = $entityManager->find(\TDW18\Usuarios\Entity\Solucion::class, $req_data['idSolucion']);
 
         /** @var \TDW18\Usuarios\Entity\Usuario $idUsuario */
-        $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $req_data['idUsuario']);
+        $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $this->jwt->user_id);
 
         $razonamiento = new \TDW18\Usuarios\Entity\Razonamiento(
             $req_data['texto'],
@@ -1107,50 +1099,61 @@ $app->post($_ENV['RUTA_API'] . '/razonamientos',
 
 $app->post($_ENV['RUTA_API'] . '/cuestiones',
     function (Request $request, Response $response): Response {
-
-        $req_data = $request->getParsedBody();
-
-        if (!isset($req_data['enunciado'], $req_data['disponible'],
-            $req_data['idUsuario'])) {
-
+        if (!$this->jwt->isMaestro) {
             $this->logger->info(
                 $request->getMethod() . ' ' . $request->getUri()->getPath(),
-                ['uid' => $this->jwt->user_id, 'status' => 422]
+                ['uid' => $this->jwt->user_id, 'status' => 403]
             );
 
             return $response
                 ->withJson(
                     [
-                        'code' => 422,
-                        'message' => 'Faltan datos de la cuestión'
+                        'code' => 403,
+                        'message' => 'Se necesitan permisos de Maestro'
                     ],
-                    422
+                    403
                 );
+        } else {
+            $req_data = $request->getParsedBody();
+
+            if (!isset($req_data['enunciado'], $req_data['disponible'])) {
+
+                $this->logger->info(
+                    $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                    ['uid' => $this->jwt->user_id, 'status' => 422]
+                );
+
+                return $response
+                    ->withJson(
+                        [
+                            'code' => 422,
+                            'message' => 'Faltan datos de la cuestión'
+                        ],
+                        422
+                    );
+            }
+
+            $entityManager = getEntityManager();
+
+            /** @var \TDW18\Usuarios\Entity\Usuario $idUsuario */
+            $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $this->jwt->user_id);
+
+            $cuestion = new \TDW18\Usuarios\Entity\Cuestion(
+                $req_data['enunciado'],
+                $req_data['disponible'],
+                $idUsuario
+            );
+
+            $entityManager->persist($cuestion);
+            $entityManager->flush();
+
+            $this->logger->info(
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                ['uid' => $this->jwt->user_id, 'status' => 201]
+            );
+
+            return $response->withJson(['idCuestion' => $cuestion->getId()])->withStatus(201);
         }
 
-        $entityManager = getEntityManager();
-
-        $this->logger->addInfo('POST CUESTION: idUsuario: ' . $req_data['idUsuario']);
-
-        /** @var \TDW18\Usuarios\Entity\Usuario $idUsuario */
-        $idUsuario = $entityManager->find(\TDW18\Usuarios\Entity\Usuario::class, $req_data['idUsuario']);
-
-        $cuestion = new \TDW18\Usuarios\Entity\Cuestion(
-            $req_data['enunciado'],
-            $req_data['disponible'],
-            $idUsuario
-        );
-
-        $entityManager->persist($cuestion);
-        $entityManager->flush();
-
-        $this->logger->info(
-            $request->getMethod() . ' ' . $request->getUri()->getPath(),
-            ['uid' => $this->jwt->user_id, 'status' => 201]
-        );
-
-        $this->logger->addInfo('POST CUESTION: idCuestion: ' . $cuestion->getId());
-
-        return $response->withJson(['idCuestion' => $cuestion->getId()])->withStatus(201);
     }
 )->setName('tdw_post_cuestiones');
